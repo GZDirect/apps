@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PHILORA – Minden bélyeg egy történet.</title>
+<link rel="stylesheet" href="css/fonts.css">
+<script>try{var t=localStorage.getItem("bs_theme");if(t==="system"||!t){t=t==="system"&&matchMedia("(prefers-color-scheme: light)").matches?"light":"dark"}document.documentElement.setAttribute("data-theme",t);var f=+localStorage.getItem("bs_fscale");if(f>1)document.documentElement.style.fontSize=(f*100)+"%";if(f>=1.6)document.documentElement.classList.add("fs-xl")}catch(e){document.documentElement.setAttribute("data-theme","dark")}</script>
+<meta name="theme-color" content="#12392F">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PHILORA">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/screens.css">
+<link rel="stylesheet" href="css/refine.css">
+<script src="js/i18n.js"></script>
+<script src="js/brand.js"></script>
+</head>
+<body>
+
+<div class="splash" id="splash" aria-hidden="true"></div>
+<div class="demo-banner" id="demoBanner" hidden role="status">
+  <span><b>DEMÓ</b> · szimulált adatok, nem élesek</span>
+  <button class="btn small" data-act="demo-exit">Kilépés</button>
+</div>
+
+<header class="top">
+  <div class="brand"><h1 id="brandMark"></h1><small id="brandSlogan"></small></div>
+  <button class="gear" data-act="settings" aria-label="Beállítások és biztonsági mentés" style="margin-left:auto"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-gear"/></svg></button>
+  <div class="cur" id="curSwitch" role="group" aria-label="Pénznem">
+    <button data-c="HUF" class="on">Ft</button><button data-c="EUR">€</button>
+  </div>
+</header>
+
+<main>
+<!-- ============ HOME ============ -->
+<section class="view on" id="v-home"><div class="wrap" id="homeWrap"></div></section>
+
+<!-- ============ COLLECTION ============ -->
+<section class="view" id="v-coll"><div class="wrap" id="collWrap"></div></section>
+
+<!-- ============ SCAN ============ -->
+<section class="view" id="v-scan">
+<div class="wrap">
+  <h2 class="page-title">Szkennelés</h2>
+  <div id="scanForm">
+    <div class="scan-stage">
+      <div class="viewfinder" id="vf"></div>
+      <div class="shutter-bar">
+        <label class="sb-side" aria-label="Galéria"><span class="sb-ic"><svg class="ic" width="24" height="24" aria-hidden="true"><use href="#i-image"/></svg></span><span class="sb-l">Galéria</span><input type="file" accept="image/*" data-in="main" data-src="gallery"></label>
+        <label class="sb-shutter" aria-label="Kamera"><span class="sb-ring"><svg class="ic" width="26" height="26" aria-hidden="true"><use href="#i-camera"/></svg></span><span class="sb-l">Kamera</span><input type="file" accept="image/*" capture="environment" data-in="main" data-src="camera"></label>
+        <span class="sb-side sb-empty" aria-hidden="true"></span>
+      </div>
+      <div class="mode scan-mode" id="modeSw" role="tablist" aria-label="Szkennelési mód">
+        <button data-act="mode" data-m="single" class="on" role="tab">Egy bélyeg</button>
+        <button data-act="mode" data-m="page" role="tab">Teljes albumoldal</button>
+      </div>
+    </div>
+    <div class="back-row" id="backRow"></div>
+    <div class="qbox" id="q-main" aria-live="polite"></div>
+    <div class="tips" id="tips"></div>
+    <button class="btn primary" data-act="analyze" id="btnAnalyze" disabled style="margin-top:14px"><svg class="ic" width="19" height="19" aria-hidden="true"><use href="#i-sparkle"/></svg> Felismerés indítása</button>
+    <div id="aiMissing" class="err" style="display:none"></div>
+  </div>
+  <div id="loading" class="card" style="display:none" aria-live="polite"></div>
+  <div id="cropEd"></div>
+  <div id="result"></div>
+</div>
+</section>
+
+<!-- ============ PORTFOLIO ============ -->
+<section class="view" id="v-pf"><div class="wrap" id="pfWrap"></div></section>
+
+<!-- ============ LEARN ============ -->
+<section class="view" id="v-learn"><div class="wrap" id="learnWrap"></div></section>
+
+<!-- ============ DESIGN SYSTEM GALLERY ============ -->
+<section class="view" id="v-design"><div class="wrap" id="designWrap"></div></section>
+</main>
+
+<!-- teljes képernyős nézetek -->
+<section class="overlay" id="v-atlas" hidden aria-label="Világatlasz"></section>
+<section class="overlay" id="v-heritage" hidden aria-label="Örökség"></section>
+<section class="overlay" id="v-detail" hidden aria-label="Bélyeg adatlap"></section>
+<section class="overlay" id="v-article" hidden aria-label="Cikk"></section>
+<section class="overlay" id="v-lab" hidden aria-label="Recognition Lab"></section>
+<div class="zoomer" id="zoomer" hidden></div>
+
+<nav class="tabs" aria-label="Fő navigáció">
+  <button data-v="home" class="on" aria-current="page"><svg class="ic" width="24" height="24" aria-hidden="true"><use href="#i-home"/></svg><span class="lbl">Kezdőlap</span></button>
+  <button data-v="coll"><svg class="ic" width="24" height="24" aria-hidden="true"><use href="#i-grid"/></svg><span class="lbl">Gyűjtemény</span></button>
+  <button data-v="scan" class="scan-btn" aria-label="Szkennelés"><span class="scan-orb"><svg class="ic" width="28" height="28" aria-hidden="true"><use href="#i-camera"/></svg></span><span class="lbl">Szkennelés</span></button>
+  <button data-v="pf"><svg class="ic" width="24" height="24" aria-hidden="true"><use href="#i-chart"/></svg><span class="lbl">Portfólió</span></button>
+  <button data-v="learn"><svg class="ic" width="24" height="24" aria-hidden="true"><use href="#i-book"/></svg><span class="lbl">Tudástár</span></button>
+</nav>
+
+<div class="modal" id="modal" aria-hidden="true"><div class="sheet" role="dialog" aria-modal="true" aria-label="Részletek" tabindex="-1"><div class="grab"></div><div id="modalBody"></div></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>BS.loadModules(["icons.js", "art.js", "articles.js", "app.js", "demo.js", "home.js", "collection.js", "detail.js", "portfolio.js", "learn.js", "gallery.js", "lab.js", "atlas-geo.js", "atlas-data.js", "atlas.js", "heritage.js"]);</script>
+</body>
+</html>

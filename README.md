@@ -5,6 +5,7 @@ Saját használatú webalkalmazások. Minden app külön mappában él, a gyűjt
 | App | Cím |
 |---|---|
 | LapTrezor – kosárlabdakártya-gyűjtemény és értékbecslés | `/apps/LapTrezor/` |
+| PHILORA – bélyeggyűjtemény és értékbecslés | `/apps/PHILORA/` |
 
 Új app felvétele: új mappa (pl. `/apps/UjApp/`), és egy új kártya az `index.html`-ben.
 Az appok adatai a telefonon/böngészőben tárolódnak, a repóba nem kerül személyes adat.

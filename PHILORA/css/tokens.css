@@ -1,0 +1,96 @@
+/* PHILORA dizájntokenek – Premium Grafikai Csomag v1.0 (assets/brand/tokens.json) alapján.
+   Alappaletta: forest-900 #10382F · forest-800 #16483B · forest-700 #22584A · gold-500 #C5A46D · gold-300 #E0C48E
+   · ivory-100 #F5F0E5 · paper-200 #E9E0CE · ink-900 #242A27 · sage-500 #7F9B8E · success #4B9772 · warning #A46C24 · error #B54E4A.
+   Szabályok (mért kontraszt, WCAG AA ≥ 4,5:1):
+   - sötét alapon szövegként a gold-300 (7,65:1) és a gold-500 (5,47:1) használható; a sage-500 (4,29:1) csak díszítés, szövegnek a #A9B7AB (6,17:1);
+   - elefántcsont alapon a szöveg ink-900 (12,87:1), arany szöveg a sötét arany #7A5E2A (5,34:1);
+   - a success / warning / error alapszínek ikonra, keretre, sávra valók; szövegként sötétített változatuk (#2F6E50 5,33 · #7A4E12 6,32 · #963A36 6,25). */
+:root{
+  /* alappaletta */
+  --c-forest:#10382F; --c-forest-2:#16483B; --c-forest-3:#0C2D26; --c-forest-4:#22584A;
+  --c-gold:#C5A46D; --c-gold-light:#E0C48E; --c-gold-dark:#7A5E2A;
+  --c-ivory:#F5F0E5; --c-ivory-2:#FFFDF8; --c-ivory-3:#E9E0CE;
+  --c-graphite:#242A27; --c-sage:#7F9B8E; --c-sage-light:#A9B7AB; --c-sage-pale:#B5C4BB; --c-slate:#5A665D;
+  --c-success:#4B9772; --c-warning:#A46C24; --c-error:#B54E4A;
+  --c-ok:#2F6E50; --c-ok-bg:#E6F1EA; --c-ok-line:#B9D9C7;
+  --c-warn:#7A4E12; --c-warn-bg:#FBF1DF; --c-warn-line:#E6CB98;
+  --c-danger:#963A36; --c-danger-bg:#F8E8E6; --c-danger-line:#E9C3BF;
+
+/* tipográfia */
+  --font-display:"Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-ui:Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fs-xs:0.7188rem; --fs-sm:0.8125rem; --fs-md:0.9375rem; --fs-lg:1.0625rem; --fs-xl:1.375rem; --fs-2xl:1.75rem; --fs-3xl:2.375rem;
+  --lh:1.45;
+
+  /* térköz, sarok, árnyék */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-8:32px;
+  --r-sm:8px; --r-md:14px; --r-lg:18px; --r-xl:22px; --r-pill:999px;   /* csomag: kártya 18 px, gomb 14 px */
+  --shadow-1:0 1px 2px rgba(12,30,24,.08), 0 2px 8px rgba(12,30,24,.06);
+  --shadow-2:0 4px 14px rgba(12,30,24,.14), 0 1px 3px rgba(12,30,24,.08);
+  --shadow-3:0 12px 32px rgba(8,22,18,.28);
+  --tap:44px;
+
+  /* mozgás */
+  --dur-1:120ms; --dur-2:220ms; --dur-3:240ms;   /* csomag: koppintás 100–150 ms, átmenet 180–240 ms */ --ease:cubic-bezier(.2,.7,.2,1);
+}
+
+/* ---------- SÖTÉT téma (alapértelmezett): erdőzöld alap, elefántcsont kártyák ---------- */
+:root, :root[data-theme="dark"]{
+  --bg:var(--c-forest);
+  --bg-elev:var(--c-forest-3);
+  --on-bg:var(--c-ivory);          /* 11,34:1 */
+  --on-bg-2:var(--c-sage-light);   /* 6,08:1 */
+  --on-bg-accent:var(--c-gold-light); /* 7,65:1 */
+  --on-bg-line:rgba(245,240,230,.22);
+  --surface:var(--c-ivory);
+  --surface-2:var(--c-ivory-3);
+  --surface-input:var(--c-ivory-2);
+  --ink:var(--c-graphite);         /* 12,87:1 (ivory) */
+  --ink-2:var(--c-slate);          /* 5,29:1 */
+  --ink-accent:var(--c-gold-dark); /* 5,34:1 */
+  --line:#DCD3C0;
+  --hero:var(--c-forest-2);
+  --hero-ink:var(--c-ivory);       /* 9,13:1 */
+  --hero-ink-2:var(--c-sage-pale); /* 5,72:1 */
+  --hero-accent:var(--c-gold-light);
+  --hero-line:rgba(197,164,109,.45);
+  --nav-bg:var(--c-forest-3);
+  --nav-ink:var(--c-sage-light);
+  --nav-active:var(--c-gold);
+  --primary:var(--c-gold); --primary-ink:var(--c-graphite); /* 6,41:1 */
+  --selected:var(--c-forest); --selected-ink:var(--c-ivory);
+  --focus:var(--c-gold);
+  color-scheme:dark;
+}
+
+/* ---------- VILÁGOS téma: elefántcsont alap, fehér kártyák, erdőzöld kiemelés ---------- */
+:root[data-theme="light"]{
+  --bg:var(--c-ivory);
+  --bg-elev:var(--c-ivory-3);
+  --on-bg:var(--c-graphite);
+  --on-bg-2:var(--c-slate);
+  --on-bg-accent:var(--c-gold-dark);
+  --on-bg-line:#DCD3C0;
+  --surface:var(--c-ivory-2);
+  --surface-2:var(--c-ivory-3);
+  --surface-input:#FFFFFF;
+  --ink:var(--c-graphite);
+  --ink-2:var(--c-slate);          /* 5,91:1 */
+  --ink-accent:var(--c-gold-dark); /* 5,97:1 */
+  --line:#E3DCCB;
+  --hero:var(--c-forest);
+  --hero-ink:var(--c-ivory);
+  --hero-ink-2:var(--c-sage-light);
+  --hero-accent:var(--c-gold-light);
+  --hero-line:rgba(197,164,109,.45);
+  --nav-bg:var(--c-ivory-2);
+  --nav-ink:var(--c-slate);
+  --nav-active:var(--c-forest);
+  --primary:var(--c-forest); --primary-ink:var(--c-ivory);
+  --selected:var(--c-forest); --selected-ink:var(--c-ivory);
+  --focus:var(--c-gold-dark);
+  color-scheme:light;
+}
+
+/* régi változónevek (a kód inline stílusai miatt) */
+:root{ --green:var(--c-forest); --green2:var(--c-ok); --wine:var(--c-danger); --gold:var(--c-gold); --muted:var(--fg-2); }
