@@ -23,7 +23,7 @@
 
   /* index.html statikus szövegei (a dinamikus felület szövegei a js-en/ modulokban vannak). */
   const STATIC = {
-    "DEMÓ": "DEMO", "· szimulált adatok, nem élesek": "· simulated data, not live", "Kilépés": "Exit",
+    
     "Beállítások és biztonsági mentés": "Settings and backup", "Pénznem": "Currency",
     "Szkennelés": "Scan", "Szkennelési mód": "Scan mode", "Egy bélyeg": "Single stamp", "Teljes albumoldal": "Whole album page",
     "Kamera": "Camera", "Galéria": "Gallery", "Felismerés indítása": "Start recognition",

@@ -1,5 +1,5 @@
 /* GENERÁLT FÁJL – ne szerkeszd. Forrás: js/home.js, szótár: tools/i18n/en.json, eszköz: tools/i18n/build-en.js */
-/* PHILORA – Kezdőlap. Csak valós (vagy demó módban jelölt szimulált) adatot mutat; értékgörbét nem rajzol kitalált adatból. */
+/* PHILORA – Kezdőlap. Csak valós adatot mutat; értékgörbét nem rajzol kitalált adatból. */
 (() => {
   const B = window.BS;
   function greet(){ const h = new Date().getHours(); return h < 9 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening"; }
@@ -15,7 +15,6 @@
   B.renderHome = () => {
     const A = B.app, el = document.getElementById("homeWrap"); if (!A || !el) return;
     const S = A.S, items = S.items, R = A.gRate(), ic = A.ic, esc = A.esc;
-    const demo = A.store.mode === "demo";
     if (!items.length) {
       el.innerHTML = `<div class="welcome">
         ${B.brandImg("empty.collection", B.art.empty())}
@@ -23,7 +22,6 @@
         <p>Photograph your first stamp – the app recognises it, estimates its condition and value, and starts your digital collection.</p>
         <button class="btn primary" data-act="goscan-single">${ic("camera", 20)} Scan your first stamp</button>
         <button class="btn ghost" data-act="goscan-page" style="margin-top:10px">${ic("album", 20)} Whole album page</button>
-        <button class="linkbtn" data-act="demo-enter" style="margin-top:14px">Just looking around – try demo mode</button>
         ${S.note && A.store.mode === "pending" ? `<div class="disc">${esc(S.note)}</div>` : ""}
       </div>`;
       return;
@@ -38,9 +36,9 @@
     const firstSum = items.reduce((s, i) => s + (i.first ?? A.mid(i)), 0), uH = A.groupUnit(midV, lo, hi, firstSum);
     const totD = A.roundDisp(midV, uH), revD = +(totD - A.roundDisp(firstSum, uH)).toFixed(2), revPct = firstSum ? revD / A.roundDisp(firstSum, uH) * 100 : 0;
     el.innerHTML = `
-      <p class="hc-greet">${greet()}${demo ? " · demo collection" : ""}</p>
+      <p class="hc-greet">${greet()}</p>
       <section class="hc" aria-labelledby="hcT">
-        <div class="hc-top"><span class="hc-ic">${ic("album", 18)}</span><h2 id="hcT">My collection</h2>${demo ? `<span class="hc-demo">DEMO</span>` : ""}</div>
+        <div class="hc-top"><span class="hc-ic">${ic("album", 18)}</span><h2 id="hcT">My collection</h2></div>
         <div class="hc-lbl">Estimated value</div>
         <div class="hc-row"><div class="hc-val">${A.fmtU(midV, uH)}</div>${Math.abs(revPct) >= 0.05 ? `<span class="hc-pill ${revD < 0 ? "neg" : ""}" title="Revaluation since added">${revD < 0 ? "▼" : "▲"} ${A.pctFmt(revPct, true)}</span>` : ""}</div>
         <div class="hc-rng">Range: ${A.fmtU(lo, uH)} – ${A.fmtU(hi, uH)}</div>
@@ -65,6 +63,6 @@
       ${near.length ? `<div class="sec-h"><h3>Nearly complete series</h3></div>${near.map(x => `<button class="near" data-act="goview" data-v="coll" data-series="${esc(x.k)}"><div class="near-t"><b>${esc(x.s.cim)}</b><span>${x.own}/${x.n} · ${x.n - x.own} missing</span></div><div class="prog"><i style="width:${Math.round(x.own / x.n * 100)}%"></i></div></button>`).join("")}` : ""}
       ${art ? `<div class="sec-h"><h3>From the Knowledge base</h3><button class="linkbtn" data-act="goview" data-v="learn">More ${ic("chevron", 14)}</button></div>
       <button class="art-card wide" data-act="article" data-id="${esc(art.id)}">${B.brandImg("articleCovers." + art.cat, B.art.cover(art.cat, 130), 'class="cover-img"')}<div class="ac-in"><span class="ac-cat">${esc((B.CATS.find(c => c.k === art.cat) || {}).l || "")}</span><b>${esc(art.t)}</b><small>${esc(art.lead)}</small></div></button>` : ""}
-      <div class="disc">Values are preliminary AI estimates without live market data.${demo ? " In demo mode all data is simulated." : ""}</div>`;
+      <div class="disc">Values are preliminary AI estimates without live market data.</div>`;
   };
 })();

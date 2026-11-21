@@ -24,11 +24,6 @@
 <body>
 
 <div class="splash" id="splash" aria-hidden="true"></div>
-<div class="demo-banner" id="demoBanner" hidden role="status">
-  <span><b>DEMÓ</b> · szimulált adatok, nem élesek</span>
-  <button class="btn small" data-act="demo-exit">Kilépés</button>
-</div>
-
 <header class="top">
   <div class="brand"><h1 id="brandMark"></h1><small id="brandSlogan"></small></div>
   <button class="gear" data-act="settings" aria-label="Beállítások és biztonsági mentés" style="margin-left:auto"><svg class="ic" width="22" height="22" aria-hidden="true"><use href="#i-gear"/></svg></button>
@@ -79,8 +74,6 @@
 <!-- ============ LEARN ============ -->
 <section class="view" id="v-learn"><div class="wrap" id="learnWrap"></div></section>
 
-<!-- ============ DESIGN SYSTEM GALLERY ============ -->
-<section class="view" id="v-design"><div class="wrap" id="designWrap"></div></section>
 </main>
 
 <!-- teljes képernyős nézetek -->
@@ -88,7 +81,6 @@
 <section class="overlay" id="v-heritage" hidden aria-label="Örökség"></section>
 <section class="overlay" id="v-detail" hidden aria-label="Bélyeg adatlap"></section>
 <section class="overlay" id="v-article" hidden aria-label="Cikk"></section>
-<section class="overlay" id="v-lab" hidden aria-label="Recognition Lab"></section>
 <div class="zoomer" id="zoomer" hidden></div>
 
 <nav class="tabs" aria-label="Fő navigáció">
@@ -102,6 +94,6 @@
 <div class="modal" id="modal" aria-hidden="true"><div class="sheet" role="dialog" aria-modal="true" aria-label="Részletek" tabindex="-1"><div class="grab"></div><div id="modalBody"></div></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script>BS.loadModules(["icons.js", "art.js", "articles.js", "app.js", "demo.js", "home.js", "collection.js", "detail.js", "portfolio.js", "learn.js", "gallery.js", "lab.js", "atlas-geo.js", "atlas-data.js", "atlas.js", "heritage.js"]);</script>
+<script>BS.loadModules(["icons.js", "art.js", "articles.js", "app.js", "home.js", "collection.js", "detail.js", "portfolio.js", "learn.js", "atlas-geo.js", "atlas-data.js", "atlas.js", "heritage.js"]);</script>
 </body>
 </html>

@@ -66,29 +66,6 @@
     ["Fill the frame", `<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 16V8h8M32 8h8v8M40 32v8h-8M16 40H8v-8" fill="none" stroke="currentColor" stroke-width="2"/><rect x="14" y="13" width="20" height="22" fill="currentColor" opacity=".25"/></svg>`]
   ];
 
-  /* Demó bélyegkép (vászonra rajzolt, egyértelműen illusztráció) */
-  A.demoStamp = (seed, label, den, w = 240) => {
-    const h = Math.round(w * 1.2), c = document.createElement("canvas"); c.width = w; c.height = h; const x = c.getContext("2d");
-    const pals = [["#7A2E2E","#E9D9B4"],["#1F4E79","#E8E2CF"],["#2F5D3A","#EFE6CC"],["#6B4C8A","#ECE3D2"],["#8A5A1F","#F1E7CF"],["#264F4F","#E9E1CB"],["#5A2440","#EFE2D0"],["#3B3B3B","#EDE6D6"]];
-    const [ink, paper] = pals[seed % pals.length];
-    x.fillStyle = "#fbf8f1"; x.fillRect(0, 0, w, h);
-    x.fillStyle = "#e8e2d4"; const r = w * .025, st = w * .07;
-    for (let i = st / 2; i < w; i += st) { x.beginPath(); x.arc(i, 0, r, 0, 7); x.arc(i, h, r, 0, 7); x.fill(); }
-    for (let i = st / 2; i < h; i += st) { x.beginPath(); x.arc(0, i, r, 0, 7); x.arc(w, i, r, 0, 7); x.fill(); }
-    const m = w * .1; x.fillStyle = paper; x.fillRect(m, m, w - 2 * m, h - 2 * m);
-    x.strokeStyle = ink; x.lineWidth = w * .012; x.strokeRect(m + 4, m + 4, w - 2 * m - 8, h - 2 * m - 8);
-    x.fillStyle = ink; x.globalAlpha = .85;
-    const motif = seed % 4, cx = w / 2, cy = h * .46;
-    x.beginPath();
-    if (motif === 0) { x.arc(cx, cy, w * .2, 0, 7); }
-    else if (motif === 1) { x.moveTo(cx - w * .22, cy + w * .16); x.lineTo(cx, cy - w * .2); x.lineTo(cx + w * .22, cy + w * .16); x.closePath(); }
-    else if (motif === 2) { x.rect(cx - w * .2, cy - w * .16, w * .4, w * .32); }
-    else { x.ellipse(cx, cy, w * .14, w * .21, 0, 0, 7); }
-    x.fill(); x.globalAlpha = 1;
-    x.font = `700 ${Math.round(w * .11)}px Georgia, serif`; x.textAlign = "center"; x.fillText(den, cx, h - m - w * .08);
-    x.font = `600 ${Math.round(w * .055)}px Inter, sans-serif`; x.fillText(label.toUpperCase().slice(0, 16), cx, m + w * .1);
-    x.font = `700 ${Math.round(w * .05)}px Inter, sans-serif`; x.fillStyle = "rgba(138,43,43,.85)"; x.save(); x.translate(cx, cy); x.rotate(-.35); x.fillText("DEMO", 0, 0); x.restore();
-    return c.toDataURL("image/jpeg", .82);
-  };
+
   window.BS = window.BS || {}; window.BS.art = A;
 })();

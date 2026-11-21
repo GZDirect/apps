@@ -1,4 +1,4 @@
-/* PHILORA – Portfólió: pénzügyi áttekintő. Értékgörbe csak valós (vagy demó módban jelölt szimulált) történeti pontokból. */
+/* PHILORA – Portfólió: pénzügyi áttekintő. Értékgörbe csak valós történeti pontokból. */
 (() => {
   const B = window.BS;
   const P = {range:"all"};
@@ -112,7 +112,6 @@
   }
   const HEAD = ["Kód","Megnevezés","Ország","Kiadás éve","Névérték","Sorozat","Állapot","Fokozat","Becslés min (Ft)","Becslés max (Ft)","Becslés módja","Utolsó értékelés","Megerősítve","MBK","Michel","Beszerzési ár (Ft)","Beszerzés dátuma","Album","Albumhely","Portfólió","Példánytípus"];
   async function save(A, name, data){
-    if (A.store.mode === "demo") return A.toast("Demó módban nincs export – a demó adatok nem kerülhetnek ki éles fájlba.");
     let dl = null; try { dl = window.claude?.use ? await window.claude.use("downloads") : null; } catch(e){}
     if (!dl) return A.toast("A fájlmentés ebben a nézetben nem érhető el – nyisd meg az appot a claude.ai-on.");
     try { await dl.save({filename:name, data}); A.toast("Fájl mentve"); } catch(e){ A.toast(e?.code === "declined" ? "Mentés megszakítva." : "A mentés nem sikerült."); }

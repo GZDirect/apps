@@ -1,6 +1,6 @@
 /* PHILORA Atlasz – interaktív filatéliai világtérkép (Térkép / Lista / Történelmi) és kibocsátói adatlap.
    Rétegek: háttér (óceán, fokhálózat, díszítés) és külön kattintható földrajzi réteg (valós Natural Earth vektorok).
-   Csak valós, mentett adatból számol; demó módban a szimulált adatot mutatja és semmit nem ír. */
+   Csak valós, mentett adatból számol, és semmit nem ír. */
 (() => {
   const B = window.BS;
   const AT = {tab: "map", pf: null, sel: null, status: "all", period: "all", labels: false, grat: true, view: null, era: null};

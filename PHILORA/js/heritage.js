@@ -13,7 +13,7 @@
 
   function render(){
     const A = B.app, h = ov(); if (!A || !h || h.hidden) return;
-    const I = A.S.items, esc = A.esc, demo = A.store.mode === "demo", n = I.length;
+    const I = A.S.items, esc = A.esc, n = I.length;
     const pricedL = I.filter(i => (+i.max || 0) > 0), lo = pricedL.reduce((s, i) => s + (+i.min || 0), 0), hi = pricedL.reduce((s, i) => s + (+i.max || 0), 0);
     const conf = I.filter(i => i.azonositas?.megerositve).length;
     const byAlb = new Map(); for (const i of I) { const k = i.peldany?.album || ""; const x = byAlb.get(k) || {n: 0, lo: 0, hi: 0}; x.n++; x.lo += +i.min || 0; x.hi += +i.max || 0; byAlb.set(k, x); }
@@ -42,7 +42,7 @@
           <button type="button" class="btn ghost" data-act="hr-savemsg" style="margin-top:8px">${A.ic("check", 18)} Mentés</button>${og.t ? `<p class="muted" style="font-size:.75rem">Utoljára mentve: ${A.today(og.t)}</p>` : ""}</form></div>
         <div class="card"><h3 class="sec-t">${A.ic("download", 18)} Export</h3>
           <div class="row"><button class="btn primary" data-act="hr-report">${A.ic("download", 18)} Hagyatéki leltár (nyomtatható)</button><button class="btn ghost" data-act="export">${A.ic("download", 18)} Teljes mentés (JSON)</button></div>
-          <p class="disc">A leltár HTML-fájl; a böngésző „Nyomtatás → Mentés PDF-ként” funkciójával PDF lesz belőle. A JSON-mentés a dokumentumfotókat is tartalmazza, és ebből a gyűjtemény teljesen visszaállítható.${demo ? " Demó módban az export nem érhető el." : ""}</p></div>`
+          <p class="disc">A leltár HTML-fájl; a böngésző „Nyomtatás → Mentés PDF-ként” funkciójával PDF lesz belőle. A JSON-mentés a dokumentumfotókat is tartalmazza, és ebből a gyűjtemény teljesen visszaállítható.</p></div>`
         : `<div class="empty-state">${A.ic("book", 30)}<b>Még nincs mit leltárba venni</b><span>Szkennelj be egy bélyeget, és itt rögzítheted az eredetét.</span><button class="btn primary small" data-act="goscan-single">${A.ic("camera", 16)} Szkennelés</button></div>`}
         <div class="disc">Az értékek előzetes AI-becslések, élő piaci adat nélkül; ez a leltár nem hivatalos értékbecslés. Biztosításhoz vagy hagyatéki eljáráshoz kérj szakértői értékbecslést.</div>
       </div></div>`;
@@ -72,7 +72,6 @@
     return url;
   }
   async function report(A){
-    if (A.store.mode === "demo") return A.toast("Demó módban nincs export – a demó adatok nem kerülhetnek ki éles fájlba.");
     let dl = null; try { dl = window.claude?.use ? await window.claude.use("downloads") : null; } catch(e){}
     if (!dl) return A.toast("A fájlmentés ebben a nézetben nem érhető el – nyisd meg az appot a claude.ai-on.");
     const I = [...A.S.items].sort((a, b) => A.mid(b) - A.mid(a)), esc = A.esc, d = new Date().toISOString().slice(0, 10), og = A.S.prefs?.orokseg || {};

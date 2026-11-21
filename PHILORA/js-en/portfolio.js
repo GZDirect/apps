@@ -1,5 +1,5 @@
 /* GENERÁLT FÁJL – ne szerkeszd. Forrás: js/portfolio.js, szótár: tools/i18n/en.json, eszköz: tools/i18n/build-en.js */
-/* PHILORA – Portfólió: pénzügyi áttekintő. Értékgörbe csak valós (vagy demó módban jelölt szimulált) történeti pontokból. */
+/* PHILORA – Portfólió: pénzügyi áttekintő. Értékgörbe csak valós történeti pontokból. */
 (() => {
   const B = window.BS;
   const P = {range:"all"};
@@ -113,7 +113,6 @@
   }
   const HEAD = ["Code","Name","Country","Year of issue","Face value","Series","Condition","Grade","Estimate min (Ft)","Estimate max (Ft)","Estimate method","Last valuation","Confirmed","MBK","Michel","Purchase price (Ft)","Purchase date","Album","Album location","Portfolio","Copy type"];
   async function save(A, name, data){
-    if (A.store.mode === "demo") return A.toast("No export in demo mode – demo data cannot go into a live file.");
     let dl = null; try { dl = window.claude?.use ? await window.claude.use("downloads") : null; } catch(e){}
     if (!dl) return A.toast("Saving files is not available in this view – open the app on claude.ai.");
     try { await dl.save({filename:name, data}); A.toast("File saved"); } catch(e){ A.toast(e?.code === "declined" ? "Saving cancelled." : "Saving failed."); }

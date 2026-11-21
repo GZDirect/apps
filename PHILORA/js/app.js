@@ -645,15 +645,13 @@ function setMode(m){
 
 /* ---------- storage ---------- */
 const store = {
-  mode:"pending", coll:null, local:{}, demo:null, prev:null,
+  mode:"pending", coll:null, local:{},
   async put(id, data){
     const clean = JSON.parse(JSON.stringify(data)); delete clean.id; if (clean.schema == null) clean.schema = 1;
-    if (this.mode === "demo") { this.demo[id] = clean; ingestDemo(); return; }
     if (this.mode === "db") return this.coll.doc(id).set(clean);
     this.local[id] = clean; this.persist(); idb.put(id, clean); ingestLocal();
   },
   async del(id){
-    if (this.mode === "demo") { delete this.demo[id]; ingestDemo(); return; }
     if (this.mode === "db") return this.coll.doc(id).delete();
     delete this.local[id]; this.persist(); idb.del(id); ingestLocal();
   },
@@ -694,19 +692,6 @@ const idb = {
   del(id){ if (!this.ok) return; try { this.tx("readwrite").delete(id); } catch(e){} },
   putAll(o){ if (!this.ok) return; try { const st = this.tx("readwrite"); for (const [k, v] of Object.entries(o)) st.put(v, k); } catch(e){} }
 };
-function ingestDemo(){ ingest(Object.entries(store.demo).map(([id, d]) => ({id, ...d}))); }
-function enterDemo(){
-  if (store.mode === "demo") return;
-  store.prev = store.mode; store.mode = "demo"; store.demo = window.BS.demoDocs();
-  document.body.classList.add("is-demo"); $("#demoBanner").hidden = false;
-  S.activePf = "all"; ingestDemo(); closeModal(); show("home"); toast("Demó mód: szimulált gyűjtemény betöltve");
-}
-function exitDemo(){
-  if (store.mode !== "demo") return;
-  store.mode = store.prev || "local"; store.demo = null;
-  document.body.classList.remove("is-demo"); $("#demoBanner").hidden = true;
-  S.activePf = "all"; ingest(S.realRaw || []); show("home"); toast("Kiléptél a demó módból – az éles gyűjteményedet látod");
-}
 function normItem(d){ return {...d, kind:"item", pf:d.pf||"default", first: d.first ?? mid(d), seriesKey:d.seriesKey||"", memberIdx: Number.isInteger(d.memberIdx) ? d.memberIdx : -1, priceHistory:d.priceHistory||[]}; }
 function ingest(list){
   const items = [], series = {}, pfs = [], albums = [], wishes = []; let hist = {points:[]}, prefs = {};
@@ -726,7 +711,7 @@ function ingest(list){
   Object.assign(S, {items, series, portfolios:pfs, hist, raw:list, albums, wishes, prefs});
   const newest = items.filter(i => validRate(i.result?.eur_huf)).sort((a,b) => (b.lastPriced||b.createdAt||0) - (a.lastPriced||a.createdAt||0))[0];
   S.dispRate = newest ? validRate(newest.result.eur_huf) : 0;
-  if (!S.noMigrate && store.mode !== "demo") setTimeout(() => migrate(list), 0);
+  if (!S.noMigrate) setTimeout(() => migrate(list), 0);
   if (!["all","default"].includes(S.activePf) && !pfs.some(p => p.id === S.activePf)) S.activePf = "all";
   renderPf(); refreshViews();
 }
@@ -734,7 +719,7 @@ function refreshViews(){
   const B = window.BS;
   try { if (S.view === "home") B.renderHome?.(); if (S.view === "coll") B.renderCollection?.(); if (S.view === "learn") B.renderLearn?.(); B.refreshDetail?.(); B.refreshAtlas?.(); B.refreshHeritage?.(); } catch(e){ console.error(e); }
 }
-function ingestLocal(){ const l = Object.entries(store.local).map(([id, d]) => ({id, ...d})); S.realRaw = l; if (store.mode !== "demo") ingest(l); }
+function ingestLocal(){ const l = Object.entries(store.local).map(([id, d]) => ({id, ...d})); S.realRaw = l; ingest(l); }
 async function initStore(){
   await waitClaude();
   try {
@@ -747,7 +732,7 @@ async function initStore(){
       const t = setTimeout(() => { S.note = "A portfólió most nem érhető el – lehet, hogy elavult."; renderPf(); }, 10000);
       store.coll.onSnapshot(snap => {
         if (!snap.metadata.fromCache) { clearTimeout(t); S.note = ""; }
-        const l = snap.docs.map(d => ({id:d.id, ...d.data()})); S.realRaw = l; if (store.mode !== "demo") ingest(l);
+        const l = snap.docs.map(d => ({id:d.id, ...d.data()})); S.realRaw = l; ingest(l);
       }, () => { clearTimeout(t); S.note = "A portfólió nem tölthető be."; renderPf(); });
       return;
     }
@@ -846,7 +831,6 @@ Bélyegek: `;
 /* i18n-skip-end */
 async function refreshPrices(){
   if (S.refreshing) return;
-  if (store.mode === "demo") return toast("Demó módban az árfrissítés nem fut – az adatok szimuláltak.");
   const sample = await getSample();
   if (!sample) return toast("Az AI ebben a nézetben nem érhető el.");
   const items = pfItems(S.activePf); if (!items.length) return;
@@ -1062,22 +1046,15 @@ function openSettings(){
     <div class="seg" role="radiogroup" aria-label="Téma">${[["dark","Sötét"],["light","Világos"],["system","Rendszer"]].map(([k, l]) => `<button data-act="theme" data-t="${k}" role="radio" aria-checked="${themePref() === k}" class="${themePref() === k ? "on" : ""}">${l}</button>`).join("")}</div>
     <h3 class="sec-t" style="margin-top:14px">Betűméret</h3>
     <div class="seg" role="radiogroup" aria-label="Betűméret">${[["1","Normál"],["1.15","Nagy"],["1.3","Extra nagy"]].map(([k, l]) => `<button data-act="fscale" data-s="${k}" role="radio" aria-checked="${fscale() === +k}" class="${fscale() === +k ? "on" : ""}">${l}</button>`).join("")}</div>
-    <h3 class="sec-t" style="margin-top:14px">Demó mód</h3>
-    <p class="muted" style="font-size:0.8125rem;margin:2px 0 8px">Szimulált, 30+ bélyeges gyűjtemény a képernyők kipróbálásához. A demó adatok soha nem kerülnek az éles gyűjteménybe.</p>
-    ${store.mode === "demo" ? `<button class="btn ghost" data-act="demo-exit">Kilépés a demó módból</button>` : `<button class="btn ghost" data-act="demo-enter">${ic("sparkle",18)} Demó mód indítása</button>`}
     <h3 class="sec-t" style="margin-top:14px">Adatok</h3>
     <button class="btn primary" data-act="export">${ic("download",18)} Adatok exportálása (JSON)</button>
     <label class="btn ghost" style="margin-top:10px">${ic("upload",18)} Adatok importálása<input type="file" accept=".json,application/json" id="importFile"></label>
     <div id="importBox"></div>
     <div class="disc" style="text-align:center">Az import csak hozzáad: meglévő tételt nem ír felül és nem töröl.</div>
-    <h3 class="sec-t" style="margin-top:14px">Fejlesztői eszközök</h3>
-    <button class="btn ghost" data-act="lab-open-lab" style="margin-bottom:10px">${ic("sparkle",18)} Recognition Lab – valódi fotók mérése</button>
-    <button class="btn ghost" data-act="gallery" style="margin-bottom:10px">${ic("grid",18)} Dizájnrendszer (komponensgaléria)</button>
     <button class="btn ghost" data-act="close">Bezárás</button>`);
   $("#importFile").addEventListener("change", e => { readImport(e.target.files[0]); e.target.value = ""; });
 }
 async function exportData(btn){
-  if (store.mode === "demo") return toast("Demó módban nincs export – a demó adatok nem kerülhetnek az éles mentésbe.");
   const docs = (S.raw || []).map(d => ({...d}));
   const payload = {app:window.BS.BRAND.exportId, format:EXPORT_FORMAT, exportedAt:new Date().toISOString(), source:store.mode, counts:counts(docs), docs};
   let dl = null; try { await waitClaude(); dl = window.claude?.use ? await window.claude.use("downloads") : null; } catch(e){}
@@ -1117,7 +1094,6 @@ async function readImport(file){
   } catch(e) { pendingImport = null; box.innerHTML = `<div class="err">${esc(e.message || "A fájl nem olvasható.")}</div>`; }
 }
 async function doImport(btn){
-  if (store.mode === "demo") return toast("Demó módban nem lehet importálni.");
   const docs = pendingImport; if (!docs?.length) return;
   btn.disabled = true; let n = 0;
   try {
@@ -1153,8 +1129,6 @@ function show(v){
   if (v === "scan" && !S.scan) renderSlots();
   document.querySelectorAll(".view").forEach(s => s.classList.toggle("on", s.id === "v-"+v));
   document.querySelectorAll("nav.tabs button").forEach(b => { const on = b.dataset.v === v; b.classList.toggle("on", on); if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
-  if (v === "design" && window.BS.renderGallery) window.BS.renderGallery();
-  if (v !== "design" && location.hash === "#komponensek") location.hash = "";
   window.scrollTo(0,0);
 }
 document.querySelectorAll("nav.tabs button").forEach(b => b.addEventListener("click", () => show(b.dataset.v)));
@@ -1200,8 +1174,6 @@ document.addEventListener("click", async e => {
   else if (act === "ce-open") { openCropEditor(); window.scrollTo(0, 0); }
   else if (act === "lang") { if (a.dataset.l !== window.BS.lang) window.BS.setLang(a.dataset.l); }
   else if (act === "fscale") { applyFscale(+a.dataset.s); openSettings(); }
-  else if (act === "demo-enter") { enterDemo(); }
-  else if (act === "demo-exit") { exitDemo(); }
   else if (act === "wish-add") {
     const sdoc = S.series[a.dataset.key] || S.scan?.series?.[a.dataset.key], t = sdoc?.tagok?.[+a.dataset.i]; if (!t) return;
     try { await store.put(uidGen("wi_"), {kind:"wish", schema:2, cim:`${sdoc.cim} – ${t.nevertek || ""}`.trim(), orszag:sdoc.orszag||"", ev:sdoc.ev||"", nevertek:t.nevertek||"", seriesKey:a.dataset.key, memberIdx:+a.dataset.i, maxAr:null, megjegyzes:"", createdAt:Date.now()}); closeModal(); toast("Kívánságlistára téve"); haptic(10); } catch(err){ toast("Nem sikerült menteni."); }
@@ -1233,7 +1205,6 @@ document.addEventListener("click", async e => {
   else if (act === "refresh") refreshPrices();
   else if (act === "settings") openSettings();
   else if (act === "theme") { applyTheme(a.dataset.t); openSettings(); }
-  else if (act === "gallery") { closeModal(); location.hash = "komponensek"; show("design"); }
   else if (act === "export") exportData(a);
   else if (act === "doimport") doImport(a);
   else if (act === "item") openItem(a.dataset.id);
@@ -1257,11 +1228,9 @@ $("#curSwitch").addEventListener("click", e => {
 function syncCur(){ document.querySelectorAll("#curSwitch button").forEach(b => b.classList.toggle("on", b.dataset.c === S.cur)); }
 let tt; function toast(m){ const t = $("#toast"); t.textContent = m; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("on"), 2600); }
 
-function route(){ if (location.hash === "#komponensek") show("design"); }
-window.addEventListener("hashchange", route);
 window.BS.app = {S, store, fmt, fmtU, fmtDisp, fmtSigned, pctFmt, hufFmt, unitFor, groupUnit, roundDisp, rate, rng, renderBrand, PROMPT_VERSION, buildPrompt, normScan, parseJSON, getSample, loadImg, toCanvas, toBlob, quality, crop, cropHi, fmtAlt, mid, r2, gRate, thumbHTML, seriesCardHTML, resultHTML, idCardHTML, esc, toast, openModal, closeModal, show, ic, haptic,
   estimate, UNK, condL, gradeL, COND, GRADES, catText, confLevel, valOr, stTag, fieldSt, today, METHOD_L, ownedMap, completedKeys, pfItems, pfName, pfList, recordHist, refreshPrices,
-  openMissing, openSeriesConfirm, uidGen, slug, strip, dupKey, list, daysAgo, sparkSVG, EDIT_FIELDS, CAT_FIELDS, enterDemo, exitDemo, refreshViews, openSettings};
+  openMissing, openSeriesConfirm, uidGen, slug, strip, dupKey, list, daysAgo, sparkSVG, EDIT_FIELDS, CAT_FIELDS, refreshViews, openSettings};
 function renderBrand(){
   const B = window.BS.BRAND;
   document.getElementById("brandMark").innerHTML = window.BS.monogram("hd") + window.BS.wordmark();
@@ -1278,6 +1247,9 @@ renderBrand();
   const hide = () => { el.classList.remove("on"); setTimeout(() => el.remove(), 400); };
   const t0 = Date.now(); window.addEventListener("load", () => setTimeout(hide, Math.max(0, 700 - (Date.now() - t0)))); setTimeout(hide, 2500);
 })();
+/* A korábbi fejlesztői tesztlabor (Recognition Lab) helyi adatainak eltakarítása – a gyűjteményt nem érinti. */
+try { for (const k of Object.keys(localStorage)) if (k === "lab_runs" || k === "lab_prices" || k.startsWith("lab_img_")) localStorage.removeItem(k); } catch(e){}
+
 /* ---------- teljes képernyő és telefonos ikon (mint a LapTrezorban) ---------- */
 const NOFS = "button,input,select,textarea,label,a,summary,details,[role=button],[role=tab],[data-act],[data-open],.atl-map,svg,canvas,img,.sheet,.modal,nav";
 function toggleFullscreen(){
@@ -1307,6 +1279,6 @@ document.addEventListener("dblclick", e => { if (Date.now() - lastTouchFs < 800 
   } catch(e){}
 })();
 
-syncCur(); renderSlots(); renderPf(); initStore(); route(); show(location.hash === "#komponensek" ? "design" : "home");
+syncCur(); renderSlots(); renderPf(); initStore(); show("home");
 document.addEventListener("DOMContentLoaded", () => show(S.view));
 })();

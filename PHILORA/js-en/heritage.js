@@ -14,7 +14,7 @@
 
   function render(){
     const A = B.app, h = ov(); if (!A || !h || h.hidden) return;
-    const I = A.S.items, esc = A.esc, demo = A.store.mode === "demo", n = I.length;
+    const I = A.S.items, esc = A.esc, n = I.length;
     const pricedL = I.filter(i => (+i.max || 0) > 0), lo = pricedL.reduce((s, i) => s + (+i.min || 0), 0), hi = pricedL.reduce((s, i) => s + (+i.max || 0), 0);
     const conf = I.filter(i => i.azonositas?.megerositve).length;
     const byAlb = new Map(); for (const i of I) { const k = i.peldany?.album || ""; const x = byAlb.get(k) || {n: 0, lo: 0, hi: 0}; x.n++; x.lo += +i.min || 0; x.hi += +i.max || 0; byAlb.set(k, x); }
@@ -43,7 +43,7 @@
           <button type="button" class="btn ghost" data-act="hr-savemsg" style="margin-top:8px">${A.ic("check", 18)} Save</button>${og.t ? `<p class="muted" style="font-size:.75rem">Last saved: ${A.today(og.t)}</p>` : ""}</form></div>
         <div class="card"><h3 class="sec-t">${A.ic("download", 18)} Export</h3>
           <div class="row"><button class="btn primary" data-act="hr-report">${A.ic("download", 18)} Estate inventory (printable)</button><button class="btn ghost" data-act="export">${A.ic("download", 18)} Full backup (JSON)</button></div>
-          <p class="disc">The inventory is an HTML file; your browser’s “Print → Save as PDF” turns it into a PDF. The JSON backup also contains the document photos and fully restores the collection.${demo ? " Export is not available in demo mode." : ""}</p></div>`
+          <p class="disc">The inventory is an HTML file; your browser’s “Print → Save as PDF” turns it into a PDF. The JSON backup also contains the document photos and fully restores the collection.</p></div>`
         : `<div class="empty-state">${A.ic("book", 30)}<b>Nothing to inventory yet</b><span>Scan a stamp and record its provenance here.</span><button class="btn primary small" data-act="goscan-single">${A.ic("camera", 16)} Scan</button></div>`}
         <div class="disc">Values are preliminary AI estimates without live market data; this inventory is not an official valuation. For insurance or probate, ask for an expert valuation.</div>
       </div></div>`;
@@ -73,7 +73,6 @@
     return url;
   }
   async function report(A){
-    if (A.store.mode === "demo") return A.toast("No export in demo mode – demo data cannot go into a live file.");
     let dl = null; try { dl = window.claude?.use ? await window.claude.use("downloads") : null; } catch(e){}
     if (!dl) return A.toast("Saving files is not available in this view – open the app on claude.ai.");
     const I = [...A.S.items].sort((a, b) => A.mid(b) - A.mid(a)), esc = A.esc, d = new Date().toISOString().slice(0, 10), og = A.S.prefs?.orokseg || {};
