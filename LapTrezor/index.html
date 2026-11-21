@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="hu"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>LapTrezor</title>
+<meta name="theme-color" content="#101114">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LapTrezor">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>[hidden]{display:none!important}
+:root{--bg:#101114;--surface:#1C1F24;--surface2:#242830;--line:rgba(255,255,255,.08);--text:#F3F1EE;--muted:#9CA0A8;--orange:#FF7A1A;--orange2:#FF9A4D;--gold:#D9AC54;--pos:#22C55E;--neg:#EF5555;--warn:#F5B942;--r:20px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;touch-action:manipulation;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.4}
+body{min-height:100vh;background:
+ radial-gradient(ellipse 80% 40% at 50% -5%,rgba(255,150,60,.18),transparent 70%),
+ radial-gradient(ellipse 60% 30% at 0% 100%,rgba(255,122,26,.08),transparent 70%),
+ repeating-linear-gradient(90deg,rgba(255,180,110,.018) 0 2px,transparent 2px 64px),
+ linear-gradient(180deg,#14151a,#0c0d10);background-attachment:fixed}
+button,input,select,textarea{font:inherit;color:inherit}
+.num{font-variant-numeric:tabular-nums}
+#app{max-width:480px;margin:0 auto;min-height:100vh;padding:0 16px calc(96px + env(safe-area-inset-bottom));position:relative}
+.top{display:flex;align-items:center;gap:10px;padding:18px 0 12px;position:sticky;top:0;z-index:5;background:linear-gradient(180deg,rgba(16,17,20,.96) 70%,rgba(16,17,20,0))}
+.top h1{font-size:19px;font-weight:700;margin:0;flex:1;text-align:center}
+.top.brand h1{text-align:left;font-size:24px;font-weight:800;font-style:italic;letter-spacing:-.5px}
+.iconbtn{width:40px;height:40px;border-radius:12px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer;color:var(--text)}
+.iconbtn:active{background:var(--surface2)}
+.iconbtn svg{width:22px;height:22px}
+.glass{background:linear-gradient(160deg,rgba(40,44,52,.78),rgba(26,28,34,.78));border:1px solid var(--line);border-radius:var(--r);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.pad{padding:16px}
+.mt{margin-top:14px}.mt2{margin-top:22px}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+.muted{color:var(--muted)}.small{font-size:12.5px}.tiny{font-size:11px}
+.pos{color:var(--pos)}.neg{color:var(--neg)}.gold{color:var(--gold)}.orange{color:var(--orange)}
+h2{font-size:17px;margin:22px 0 10px;font-weight:700}
+h3{font-size:15px;margin:0 0 8px}
+.hero .lbl{font-size:14px;color:#d8d4cf}
+.hero .big{font-size:34px;font-weight:800;letter-spacing:-1px;margin:4px 0}
+.hero{position:relative;overflow:hidden}
+.hero svg.spark{position:absolute;right:14px;top:14px;width:96px;height:44px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:12px}
+.stats>div{padding:12px 10px;border-right:1px solid var(--line)}.stats>div:last-child{border:0}
+.stats b{display:block;font-size:15px}.stats span{font-size:11px;color:var(--muted)}
+.hscroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+.hscroll::-webkit-scrollbar{display:none}
+.tcard{flex:0 0 31%;cursor:pointer;text-align:center}
+.tcard .img{aspect-ratio:2.5/3.5;border-radius:12px;overflow:hidden;background:var(--surface2);border:1px solid var(--line);position:relative}
+.tcard img,.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.tag{display:inline-block;margin-top:-12px;position:relative;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#121317;border:1px solid var(--line)}
+.tag.goldt{border-color:var(--gold);color:#fff;box-shadow:0 0 0 1px rgba(217,172,84,.25)}
+.tag.none{color:var(--muted);font-weight:500}
+.qty{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.7);border-radius:8px;padding:1px 6px;font-size:11px;font-weight:700}
+.grid4{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid4 .tcard{flex:none}
+.btn{border:0;border-radius:16px;padding:14px 18px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--surface2);color:var(--text);border:1px solid var(--line)}
+.btn.primary{background:linear-gradient(180deg,var(--orange2),var(--orange));color:#1b0d02;border:0;box-shadow:0 8px 24px rgba(255,122,26,.35)}
+.btn.block{width:100%}
+.btn.sm{padding:9px 12px;border-radius:12px;font-size:13px}
+.btn.danger{background:rgba(239,85,85,.12);color:#ff8c8c;border-color:rgba(239,85,85,.35)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn svg{width:18px;height:18px}
+.fab{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));width:min(448px,calc(100% - 32px));z-index:6}
+nav.bottom{position:fixed;bottom:0;left:0;right:0;z-index:7;background:rgba(14,15,18,.94);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.bottom .in{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+nav.bottom button{background:none;border:0;padding:10px 0 9px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--muted);cursor:pointer}
+nav.bottom button svg{width:22px;height:22px}
+nav.bottom button.on{color:var(--orange);font-weight:700}
+.seg{display:flex;background:var(--surface2);border-radius:999px;padding:4px;width:max-content;margin:0 auto}
+.seg button{border:0;background:none;padding:8px 24px;border-radius:999px;cursor:pointer;color:var(--muted);font-weight:600}
+.seg button.on{background:var(--orange);color:#1b0d02}
+.frame{position:relative;margin:18px auto 0;width:76%;aspect-ratio:2.5/3.5;border-radius:18px;background:radial-gradient(ellipse at 50% 30%,rgba(255,140,60,.10),rgba(0,0,0,.25));display:grid;place-items:center}
+.frame::before,.frame::after,.frame>i::before,.frame>i::after{content:"";position:absolute;width:34px;height:34px;border:3px solid #fff;border-radius:4px}
+.frame::before{top:-8px;left:-8px;border-right:0;border-bottom:0}.frame::after{top:-8px;right:-8px;border-left:0;border-bottom:0}
+.frame>i::before{bottom:-8px;left:-8px;border-right:0;border-top:0}.frame>i::after{bottom:-8px;right:-8px;border-left:0;border-top:0}
+.frame img{width:100%;height:100%;object-fit:contain;border-radius:14px}
+.frame .ph{color:var(--muted);text-align:center;padding:20px;font-size:14px}
+.hint{display:flex;width:max-content;margin:16px auto 0;padding:9px 16px;border-radius:999px;background:rgba(20,21,25,.85);border:1px solid var(--line);font-size:13px;gap:8px;align-items:center}
+.camrow{display:flex;justify-content:space-around;align-items:center;margin-top:22px}
+.shutter{width:74px;height:74px;border-radius:50%;border:4px solid #fff;background:radial-gradient(circle,var(--orange) 60%,var(--orange) 61%);box-shadow:0 0 0 4px rgba(255,122,26,.25);cursor:pointer;position:relative}
+.circ{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:var(--surface2);display:grid;place-items:center;cursor:pointer;position:relative}
+.circ svg{width:22px;height:22px}
+.filehidden{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.idimg{width:62%;margin:6px auto 0;aspect-ratio:2.5/3.5;border-radius:14px;overflow:hidden;border:1px solid rgba(217,172,84,.5);box-shadow:0 0 40px rgba(255,150,60,.18);background:var(--surface2)}
+.idimg img{width:100%;height:100%;object-fit:cover}
+.pname{font-size:26px;font-weight:800;margin:16px 0 8px;letter-spacing:-.5px}
+.frow{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.frow:last-child{border:0}
+.frow label{flex:0 0 42%;color:#d8d4cf;font-size:14px;display:flex;align-items:center;gap:8px}
+.frow input,.frow select{flex:1;min-width:0;background:transparent;border:0;text-align:right;font-weight:700;padding:4px 0;outline:none}
+.frow input:focus{color:var(--orange2)}
+.frow input::placeholder{color:#5c6068;font-weight:500}
+.conf{font-size:10px;padding:2px 6px;border-radius:6px;font-weight:700;white-space:nowrap}
+.conf.magas{background:rgba(34,197,94,.14);color:#6ee79a}.conf.kozepes{background:rgba(245,185,66,.14);color:var(--warn)}.conf.alacsony,.conf.olvashatatlan{background:rgba(239,85,85,.14);color:#ff8c8c}
+.badges{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.badge{border:1px solid rgba(217,172,84,.35);background:rgba(217,172,84,.06);border-radius:12px;padding:9px 2px 7px;text-align:center;font-size:10.5px;font-weight:800;letter-spacing:.3px;cursor:pointer;color:var(--muted);user-select:none}
+.badge svg{width:24px;height:24px;display:block;margin:0 auto 4px}
+.badge.on{border-color:var(--gold);color:#fff;background:linear-gradient(180deg,rgba(217,172,84,.22),rgba(217,172,84,.06));box-shadow:inset 0 0 12px rgba(217,172,84,.15)}
+.badge.on svg{color:var(--gold)}
+.badge.ro{cursor:default}
+.minicard{display:flex;gap:12px;align-items:center}
+.thumb{width:56px;aspect-ratio:2.5/3.5;border-radius:8px;overflow:hidden;background:var(--surface2);flex:none;border:1px solid var(--line)}
+.grade{display:flex;align-items:center;justify-content:space-between}
+.gscore{font-size:34px;font-weight:800;color:var(--gold)}.gscore small{font-size:16px;color:var(--gold)}
+.bar{display:grid;grid-template-columns:80px 1fr 34px;gap:10px;align-items:center;font-size:13px;margin-top:7px}
+.bar i{display:block;height:7px;border-radius:9px;background:rgba(255,255,255,.08);overflow:hidden}
+.bar i b{display:block;height:100%;background:linear-gradient(90deg,var(--orange),var(--orange2));border-radius:9px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tile{border:1px solid var(--line);border-radius:14px;padding:10px 6px;text-align:center;background:rgba(0,0,0,.2)}
+.tile.g{border-color:rgba(217,172,84,.55);background:linear-gradient(180deg,rgba(217,172,84,.12),transparent)}
+.tile .t{font-size:12.5px;font-weight:700}.tile .v{font-size:12px;font-weight:700;margin-top:4px}
+.comp{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+.comp:last-child{border:0}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--surface2)}
+.chip.o{background:rgba(255,122,26,.16);border-color:rgba(255,122,26,.4);color:var(--orange2)}
+.chip.g{background:rgba(34,197,94,.14);border-color:rgba(34,197,94,.35);color:#6ee79a}
+.chip.y{background:rgba(245,185,66,.12);border-color:rgba(245,185,66,.35);color:var(--warn)}
+.chip.r{background:rgba(239,85,85,.12);border-color:rgba(239,85,85,.35);color:#ff8c8c}
+.chip.p{background:rgba(139,92,246,.16);border-color:rgba(139,92,246,.4);color:#c4b0ff}
+.chip x{cursor:pointer;opacity:.7}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.verdict{border:1px solid rgba(34,197,94,.5);background:linear-gradient(160deg,rgba(34,197,94,.14),rgba(34,197,94,.03));border-radius:16px;padding:14px;display:flex;gap:12px}
+.verdict.neutral{border-color:var(--line);background:rgba(255,255,255,.03)}
+.verdict svg{width:30px;height:30px;flex:none;color:var(--pos)}
+.kv{display:grid;grid-template-columns:1fr 1fr}
+.kv>div{padding:14px}.kv>div+div{border-left:1px solid var(--line)}
+.kv .v{font-size:21px;font-weight:800;margin-top:4px}
+.pnl{display:flex;justify-content:space-between;align-items:center;padding:14px;border-top:1px solid var(--line)}
+.pill{padding:5px 12px;border-radius:999px;font-weight:800;font-size:13px}
+.pill.pos{background:rgba(34,197,94,.9);color:#062b12}.pill.neg{background:rgba(239,85,85,.9);color:#2b0606}
+.banner{border-radius:14px;padding:11px 14px;font-size:13px;border:1px solid rgba(245,185,66,.35);background:rgba(245,185,66,.08);color:#f7d58f;margin-top:8px}
+.banner.info{border-color:rgba(120,160,255,.3);background:rgba(120,160,255,.07);color:#c9d6ff}
+.banner.err{border-color:rgba(239,85,85,.4);background:rgba(239,85,85,.08);color:#ffb0b0}
+.field{display:block;margin-top:12px}
+.field>span{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:11px 12px;outline:none}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(255,122,26,.6)}
+.field textarea{min-height:90px;resize:vertical;font-family:ui-monospace,Menlo,monospace;font-size:12.5px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.check{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:13.5px;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--orange);flex:none;margin-top:1px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:20;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+.sheet{width:100%;max-width:480px;max-height:92vh;overflow:auto;background:#17191e;border:1px solid var(--line);border-radius:24px 24px 0 0;padding:18px 16px calc(22px + env(safe-area-inset-bottom))}
+.sheet h3{font-size:18px;margin:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);top:16px;z-index:40;background:#24272e;border:1px solid var(--line);padding:11px 16px;border-radius:14px;font-size:13.5px;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:92vw}
+.toast.err{border-color:rgba(239,85,85,.6)}
+.busy{position:fixed;inset:0;z-index:30;background:rgba(10,10,12,.78);display:grid;place-items:center;text-align:center;padding:30px}
+.spin{width:54px;height:54px;border-radius:50%;border:4px solid rgba(255,122,26,.2);border-top-color:var(--orange);animation:sp 1s linear infinite;margin:0 auto 14px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.list .li{display:flex;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.list .li:last-child{border:0}
+.list .li .grow{flex:1;min-width:0}
+.ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.search{display:flex;gap:8px}
+.search input{flex:1;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;outline:none;min-width:0}
+.search select{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:10px;outline:none}
+.empty{text-align:center;padding:24px 16px}
+.empty svg{width:160px;height:200px;margin:0 auto 10px;display:block}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.photos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.photos .p{aspect-ratio:2.5/3.5;border-radius:12px;overflow:hidden;background:var(--surface2);display:grid;place-items:center;color:var(--muted);font-size:12px;border:1px solid var(--line)}
+.photos img{width:100%;height:100%;object-fit:cover}
+a{color:var(--orange2)}
+pre.mono{white-space:pre-wrap;font-size:12px;background:var(--surface2);border-radius:12px;padding:12px;max-height:260px;overflow:auto;border:1px solid var(--line)}
+.chart{width:100%;height:auto;display:block}
+.det-head{display:flex;gap:14px}
+.det-head .thumb{width:118px;border-radius:12px;border-color:rgba(217,172,84,.5)}
+.det-head .nm{font-size:22px;font-weight:800}
+.mini{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+
+.top{padding-top:calc(18px + env(safe-area-inset-top))}</style></head>
+<body><div id="app"></div><nav class="bottom" id="nav"></nav>
+<div id="modal" class="overlay" hidden></div><div id="busy" class="busy" hidden></div><div id="toast" class="toast" hidden></div>
+<script>
+// ===== LapTrezor – tiszta logika (tesztelhető) =====
+const SCHEMA_VERSION = 1;
+const GRADE_RAW = 'RAW';
+
+function normGrade(g) {
+  let s = String(g ?? '').trim().toUpperCase();
+  if (!s || ['RAW', 'NYERS', 'UNGRADED', '-'].includes(s)) return GRADE_RAW;
+  s = s.replace(/\s+/g, ' ').replace(/([A-Z])\s?(\d)/, '$1 $2');
+  return s;
+}
+function gradeLabel(g) { return normGrade(g) === GRADE_RAW ? 'Nyers (raw)' : normGrade(g); }
+
+function median(arr) {
+  if (!arr.length) return null;
+  const a = [...arr].sort((x, y) => x - y);
+  const m = Math.floor(a.length / 2);
+  return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
+}
+const DAY = 86400000;
+function toTime(d) { const t = Date.parse(d); return isNaN(t) ? null : t; }
+
+// Becslés egy laphoz. Csak pontos egyezésű, a példány állapotával egyező megfigyelések.
+// Eladott ár elsőbbség; hirdetési ár soha nem ad értéket; kézi csak ha nincs eladott.
+function computeValuation(card, observations, opts = {}) {
+  const now = opts.now ?? Date.now();
+  const staleDays = opts.staleDays ?? 90;
+  const windowDays = opts.windowDays ?? 180;
+  const basis = normGrade(card.valuationBasis);
+  const rel = observations.filter(o => o.cardId === card.id && o.exactMatch === true &&
+    normGrade(o.conditionGrade) === basis && Number(o.priceHuf) > 0 && toTime(o.transactionDate) != null);
+  const sold = rel.filter(o => o.saleType === 'sold');
+  const manual = rel.filter(o => o.saleType === 'manual');
+  const listings = observations.filter(o => o.cardId === card.id && o.saleType === 'listing');
+  let used = [], method, confidence;
+  if (sold.length) {
+    const recent = sold.filter(o => now - toTime(o.transactionDate) <= windowDays * DAY);
+    used = recent.length ? recent : sold;
+    method = `Medián, ${used.length} eladott ár (pontos egyezés, ${gradeLabel(basis)}${recent.length ? `, utolsó ${windowDays} nap` : ', régebbi adatok'})`;
+    confidence = used.length >= 5 ? 'magas' : used.length >= 2 ? 'közepes' : 'alacsony';
+  } else if (manual.length) {
+    const last = [...manual].sort((a, b) => toTime(b.transactionDate) - toTime(a.transactionDate))[0];
+    used = [last];
+    method = `Kézi értékrögzítés (${gradeLabel(basis)})`;
+    confidence = 'kézi';
+  } else {
+    return { empty: true, basis, listingsOnly: listings.length > 0 };
+  }
+  const prices = used.map(o => Number(o.priceHuf));
+  const newest = Math.max(...used.map(o => toTime(o.transactionDate)));
+  return {
+    cardId: card.id,
+    basis,
+    estimatedUnitPriceHuf: Math.round(median(prices)),
+    lowHuf: Math.round(Math.min(...prices)),
+    highHuf: Math.round(Math.max(...prices)),
+    sourceObservationIds: used.map(o => o.id).sort(),
+    method,
+    confidence,
+    sampleSize: used.length,
+    newestTransactionDate: new Date(newest).toISOString().slice(0, 10),
+    stale: now - newest > staleDays * DAY,
+  };
+}
+
+function latestValuation(cardId, valuations) {
+  let best = null;
+  for (const v of valuations) if (v.cardId === cardId && (!best || v.calculatedAt > best.calculatedAt)) best = v;
+  return best;
+}
+
+// Van-e érdemi változás a tárolt utolsó becsléshez képest?
+function valuationChanged(prev, next) {
+  if (next.empty) return !!(prev && prev.estimatedUnitPriceHuf != null);
+  if (!prev || prev.estimatedUnitPriceHuf == null) return true;
+  return prev.estimatedUnitPriceHuf !== next.estimatedUnitPriceHuf || prev.basis !== next.basis ||
+    (prev.sourceObservationIds || []).join('|') !== next.sourceObservationIds.join('|');
+}
+
+function isStale(v, staleDays, now = Date.now()) {
+  if (!v || v.estimatedUnitPriceHuf == null) return true;
+  const t = toTime(v.newestTransactionDate);
+  return t == null || now - t > staleDays * DAY;
+}
+
+// Aktuális portfólió a tárolt becslésekből
+function portfolioNow(cards, valuations) {
+  const items = []; let total = 0, cost = 0, valuedCost = 0, missing = 0, count = 0;
+  for (const c of cards) {
+    const q = Number(c.quantity) || 0;
+    if (q <= 0) continue;
+    count += q;
+    const acq = (Number(c.acquisitionUnitPriceHuf) || 0) * q;
+    cost += acq;
+    const v = latestValuation(c.id, valuations);
+    if (v && v.estimatedUnitPriceHuf != null) {
+      items.push({ cardId: c.id, valuationId: v.id, qty: q, unitHuf: v.estimatedUnitPriceHuf });
+      total += q * v.estimatedUnitPriceHuf;
+      valuedCost += acq;
+    } else missing++;
+  }
+  return { items, total, cost, valuedCost, unrealized: total - valuedCost, missing, count };
+}
+
+// Változás felbontása: piaci átértékelés vs. vétel/eladás (nettó hozzájárulás)
+function splitChange(prevItems, nowItems) {
+  const prev = new Map((prevItems || []).map(i => [i.cardId, i]));
+  let market = 0, totalPrev = 0, totalNow = 0;
+  for (const i of prevItems || []) totalPrev += i.qty * i.unitHuf;
+  for (const i of nowItems) {
+    totalNow += i.qty * i.unitHuf;
+    const p = prev.get(i.cardId);
+    if (p) market += Math.min(p.qty, i.qty) * (i.unitHuf - p.unitHuf);
+  }
+  return { market, net: (totalNow - totalPrev) - market, total: totalNow - totalPrev, totalPrev, totalNow };
+}
+
+function snapshotDiffers(lastSnap, now) {
+  if (!lastSnap) return now.items.length > 0;
+  const a = (lastSnap.valuationsUsed || []).map(i => `${i.cardId}:${i.qty}:${i.unitHuf}`).sort().join('|');
+  const b = now.items.map(i => `${i.cardId}:${i.qty}:${i.unitHuf}`).sort().join('|');
+  return a !== b;
+}
+
+function buildSnapshot(now, lastSnap, ts) {
+  const sp = splitChange(lastSnap ? lastSnap.valuationsUsed : [], now.items);
+  return {
+    timestamp: ts,
+    totalValueHuf: Math.round(now.total),
+    totalCostBasisHuf: Math.round(now.cost),
+    unrealizedPnLHuf: Math.round(now.unrealized),
+    cardsCount: now.count,
+    valuationsUsed: now.items,
+    marketChangeHuf: Math.round(sp.market),
+    netContributionsHuf: Math.round(sp.net),
+  };
+}
+
+// Átlagos bekerülési ár darabszám-növeléskor
+function mergeAcquisition(q0, a0, q1, a1) {
+  const q = q0 + q1;
+  if (q <= 0) return 0;
+  return Math.round(((q0 * (a0 || 0)) + (q1 * (a1 || 0))) / q);
+}
+
+// ===== Duplikáció =====
+function identityKey(c) {
+  const n = v => String(v ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9/]/g, '');
+  return [c.player, c.year, c.set, c.cardNumber, c.parallel, c.serialNumber].map(n).join('|');
+}
+function hamming(a, b) {
+  if (!a || !b || a.length !== b.length) return 99;
+  let d = 0;
+  for (let i = 0; i < a.length; i++) {
+    let x = parseInt(a[i], 16) ^ parseInt(b[i], 16);
+    while (x) { d += x & 1; x >>= 1; }
+  }
+  return d;
+}
+function findDuplicates(draft, cards, draftHash) {
+  const key = identityKey(draft);
+  const hasIdentity = draft.player && (draft.cardNumber || draft.set);
+  const out = [];
+  for (const c of cards) {
+    const reasons = [];
+    if (hasIdentity && identityKey(c) === key) reasons.push('azonos adatok');
+    if (draftHash && c.frontHash && hamming(draftHash, c.frontHash) <= 8) reasons.push('nagyon hasonló fotó');
+    if (reasons.length) out.push({ card: c, reasons });
+  }
+  return out;
+}
+
+// ===== CSV =====
+function parseNumber(s) {
+  if (typeof s === 'number') return s;
+  let t = String(s ?? '').replace(/[\s ]/g, '').replace(/(Ft|HUF|USD|EUR|\$|€)/gi, '');
+  if (!t) return NaN;
+  if (t.includes(',') && t.includes('.')) {
+    if (t.lastIndexOf(',') > t.lastIndexOf('.')) t = t.replace(/\./g, '').replace(',', '.');
+    else t = t.replace(/,/g, '');
+  } else if (t.includes(',')) t = t.replace(',', '.');
+  return Number(t);
+}
+
+function parseCSV(text) {
+  text = String(text || '').replace(/^﻿/, '');
+  const firstLine = text.split(/\r?\n/)[0] || '';
+  const sep = (firstLine.match(/;/g) || []).length >= (firstLine.match(/,/g) || []).length && firstLine.includes(';') ? ';'
+    : firstLine.includes('\t') ? '\t' : ',';
+  const rows = []; let row = [], cur = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) {
+      if (ch === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; }
+      else cur += ch;
+    } else if (ch === '"') q = true;
+    else if (ch === sep) { row.push(cur); cur = ''; }
+    else if (ch === '\n' || ch === '\r') {
+      if (ch === '\r' && text[i + 1] === '\n') i++;
+      row.push(cur); cur = '';
+      if (row.some(c => c.trim() !== '')) rows.push(row);
+      row = [];
+    } else cur += ch;
+  }
+  row.push(cur);
+  if (row.some(c => c.trim() !== '')) rows.push(row);
+  return rows;
+}
+
+const OBS_ALIASES = {
+  cardId: ['cardid', 'kartyaid', 'lapid', 'kartya'],
+  transactionDate: ['transactiondate', 'datum', 'eladasdatuma', 'date', 'solddate'],
+  price: ['price', 'ar', 'priceoriginal', 'osszeg', 'eladasiar'],
+  currency: ['currency', 'deviza', 'penznem'],
+  saleType: ['saletype', 'tipus', 'type'],
+  conditionGrade: ['conditiongrade', 'allapot', 'grade', 'minosites'],
+  sourceName: ['sourcename', 'forras', 'source'],
+  sourceUrl: ['sourceurl', 'url', 'link'],
+  exactMatch: ['exactmatch', 'pontosegyezes', 'egyezes', 'pontos'],
+  notes: ['notes', 'megjegyzes', 'note'],
+};
+function normHeader(h) { return String(h).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, ''); }
+function mapSaleType(v) {
+  const s = normHeader(v);
+  if (['sold', 'eladott', 'eladva', 'eladas', 'lezart'].includes(s)) return 'sold';
+  if (['listing', 'hirdetes', 'hirdetesiar', 'aktiv', 'listed'].includes(s)) return 'listing';
+  if (['manual', 'kezi', 'kezibecsles'].includes(s)) return 'manual';
+  return null;
+}
+function parseBool(v) { const s = normHeader(v); return ['igen', 'yes', 'true', '1', 'i', 'y'].includes(s) ? true : ['nem', 'no', 'false', '0', 'n'].includes(s) ? false : null; }
+
+function toIsoDate(v) {
+  const s = String(v || '').trim().replace(/\s/g, '').replace(/\.$/, '');
+  let m = s.match(/^(\d{4})[.\-/](\d{1,2})[.\-/](\d{1,2})/);
+  if (m) return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
+  m = s.match(/^(\d{1,2})[.\-/](\d{1,2})[.\-/](\d{4})/);
+  if (m) return `${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+  const t = Date.parse(s);
+  return isNaN(t) ? null : new Date(t).toISOString().slice(0, 10);
+}
+
+// rows -> {valid:[obs draft], errors:[{line,msg}]}
+function rowsToObservations(rows, { cardId = null, rates = {}, exactDefault = null, knownCardIds = null } = {}) {
+  const errors = [], valid = [];
+  if (!rows.length) return { valid, errors: [{ line: 0, msg: 'Üres CSV.' }] };
+  const header = rows[0].map(normHeader);
+  const idx = {};
+  for (const [k, al] of Object.entries(OBS_ALIASES)) idx[k] = header.findIndex(h => al.includes(h));
+  if (idx.transactionDate < 0 || idx.price < 0) return { valid, errors: [{ line: 1, msg: 'Hiányzó kötelező oszlop: dátum és ár.' }] };
+  if (!cardId && idx.cardId < 0) return { valid, errors: [{ line: 1, msg: 'Hiányzik a kartya_id oszlop.' }] };
+  rows.slice(1).forEach((r, i) => {
+    const line = i + 2, g = k => idx[k] >= 0 ? String(r[idx[k]] ?? '').trim() : '';
+    const cid = cardId || g('cardId');
+    if (knownCardIds && !knownCardIds.has(cid)) return errors.push({ line, msg: `Ismeretlen kártya-azonosító: ${cid || '(üres)'}` });
+    const date = toIsoDate(g('transactionDate'));
+    if (!date) return errors.push({ line, msg: 'Érvénytelen vagy hiányzó dátum.' });
+    const price = parseNumber(g('price'));
+    if (!(price > 0)) return errors.push({ line, msg: 'Érvénytelen ár.' });
+    const cur = (g('currency') || 'HUF').toUpperCase().replace('FT', 'HUF');
+    let priceHuf, fxRate = null;
+    if (cur === 'HUF') priceHuf = price;
+    else if (rates[cur] > 0) { fxRate = rates[cur]; priceHuf = price * rates[cur]; }
+    else return errors.push({ line, msg: `Nincs beállítva ${cur}/HUF árfolyam a Beállításokban.` });
+    const st = g('saleType') ? mapSaleType(g('saleType')) : 'sold';
+    if (!st) return errors.push({ line, msg: `Ismeretlen típus: ${g('saleType')} (sold / listing / manual)` });
+    const src = g('sourceName');
+    if (st !== 'manual' && !src) return errors.push({ line, msg: 'Hiányzó forrás (eladott/hirdetési árnál kötelező).' });
+    let exact = idx.exactMatch >= 0 ? parseBool(g('exactMatch')) : exactDefault;
+    if (exact == null) exact = false;
+    valid.push({
+      cardId: cid, transactionDate: date, priceOriginal: price, currency: cur, priceHuf: Math.round(priceHuf), fxRate,
+      saleType: st, conditionGrade: normGrade(g('conditionGrade')), sourceName: src || 'Kézi becslés',
+      sourceUrl: g('sourceUrl'), exactMatch: exact, notes: g('notes'),
+    });
+  });
+  return { valid, errors };
+}
+
+function obsKey(o) { return [o.cardId, o.transactionDate, o.priceOriginal, o.currency, normGrade(o.conditionGrade), (o.sourceName || '').toLowerCase(), o.sourceUrl || ''].join('|'); }
+
+function csvCell(v) {
+  const s = Array.isArray(v) ? v.join(', ') : String(v ?? '');
+  return /[;"\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+function toCSV(header, rows) { return '﻿' + [header, ...rows].map(r => r.map(csvCell).join(';')).join('\r\n'); }
+
+function cardsCSV(cards, valuations) {
+  const h = ['kartya_id', 'jatekos', 'ev', 'gyarto', 'szett', 'lapszam', 'parallel', 'sorszam', 'jellemzok', 'darab', 'beszerzesi_egysegar_huf', 'beszerzes_datuma', 'ertekelesi_alap', 'becsult_egysegar_huf', 'becsles_datuma', 'becsles_bizonyossag', 'cimkek', 'megjegyzes'];
+  return toCSV(h, cards.map(c => {
+    const v = latestValuation(c.id, valuations);
+    return [c.id, c.player, c.year, c.manufacturer, c.set, c.cardNumber, c.parallel, c.serialNumber, c.features, c.quantity,
+      c.acquisitionUnitPriceHuf, c.acquisitionDate, gradeLabel(c.valuationBasis), v?.estimatedUnitPriceHuf ?? '', v?.calculatedAt?.slice(0, 10) ?? '', v?.confidence ?? '', c.tags, c.notes];
+  }));
+}
+function obsCSV(obs) {
+  const h = ['kartya_id', 'datum', 'ar', 'deviza', 'ar_huf', 'tipus', 'allapot', 'forras', 'url', 'pontos_egyezes', 'megjegyzes', 'rogzitve'];
+  return toCSV(h, obs.map(o => [o.cardId, o.transactionDate, o.priceOriginal, o.currency, o.priceHuf, o.saleType, normGrade(o.conditionGrade), o.sourceName, o.sourceUrl, o.exactMatch ? 'igen' : 'nem', o.notes, o.observedAt]));
+}
+
+// AI válasz kinyerése
+function extractJSON(text) {
+  let t = String(text || '').replace(/```(?:json)?/gi, '');
+  const a = t.indexOf('{'), b = t.lastIndexOf('}');
+  if (a < 0 || b <= a) throw new Error('Nem található JSON a válaszban.');
+  return JSON.parse(t.slice(a, b + 1));
+}
+
+
+// ===== LapTrezor – alkalmazás =====
+const $ = s => document.querySelector(s);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtHuf = n => (n == null || isNaN(n)) ? '—' : Math.round(n).toLocaleString('hu-HU') + ' Ft';
+const fmtSigned = n => (n > 0 ? '+' : n < 0 ? '−' : '±') + Math.abs(Math.round(n)).toLocaleString('hu-HU') + ' Ft';
+const fmtPct = n => (n > 0 ? '+' : '') + n.toLocaleString('hu-HU', { maximumFractionDigits: 1, minimumFractionDigits: 1 }) + '%';
+const fmtDate = d => { const t = Date.parse(d); return isNaN(t) ? '—' : new Date(t).toLocaleDateString('hu-HU'); };
+const fmtDT = d => { const t = Date.parse(d); return isNaN(t) ? '—' : new Date(t).toLocaleString('hu-HU', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }); };
+const today = () => new Date().toISOString().slice(0, 10);
+const nowIso = () => new Date().toISOString();
+const genId = p => p + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const confClass = c => String(c || '').normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+const I = {
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
+  scan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/></svg>',
+  market: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 20v-6M12 20V9M18 20V4"/></svg>',
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+  more: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+  camera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l2-2h6l2 2h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="4"/></svg>',
+  image: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 17l-5-5-9 8"/></svg>',
+  rotate: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>',
+  refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 11a8 8 0 0 0-14.9-3M4 13a8 8 0 0 0 14.9 3"/><path d="M4 4v4h4M20 20v-4h-4"/></svg>',
+  rc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/><text x="12" y="14.5" text-anchor="middle" font-size="7" font-weight="800" fill="currentColor" stroke="none">RC</text></svg>',
+  auto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M16 3l5 5L9 20H4v-5z"/><path d="M3 22c3-1 6-1 9 0"/></svg>',
+  patch: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 9h16M4 14h16M9 4v16M14 4v16"/></svg>',
+  serial: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="3"/><text x="12" y="15" text-anchor="middle" font-size="7.5" font-weight="800" fill="currentColor" stroke="none">/99</text></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M7 12.5l3 3 7-7"/></svg>',
+  info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-5M12 8h.01"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
+  copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>',
+  logo: '<svg viewBox="0 0 48 48" width="34" height="34"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFA24F"/><stop offset="1" stop-color="#FF6A00"/></linearGradient></defs><circle cx="24" cy="24" r="17" fill="none" stroke="url(#lg)" stroke-width="3.2"/><path d="M7 24h34M24 7v34M12 12c6 5 6 19 0 24M36 12c-6 5-6 19 0 24" fill="none" stroke="url(#lg)" stroke-width="2.4"/><circle cx="24" cy="24" r="22" fill="none" stroke="#D9AC54" stroke-width="1.2" stroke-dasharray="3 4" opacity=".7"/></svg>',
+};
+const FEATURES = [['rookie', 'ROOKIE', I.rc], ['autograph', 'AUTOGRAM', I.auto], ['patch', 'PATCH', I.patch], ['serialNumbered', 'SZÁMOZOTT', I.serial]];
+
+// ===== Állapot =====
+const S = {
+  mode: 'loading', // loading | db | memory
+  backend: null, // claude | local
+  storageNote: '',
+  cards: [], obs: [], vals: [], snaps: [],
+  settings: { usdHuf: null, eurHuf: null, gradingCostHuf: null, staleDays: 90 },
+  meta: null,
+  view: 'home', params: {}, stack: [],
+  scan: { side: 'front', front: null, back: null },
+  draft: null,
+  homeQuery: '', homeSort: 'value', showSold: false,
+  ai: { available: null, images: null },
+  pending: 0,
+};
+
+// ===== Helyi tároló (IndexedDB) – GitHub/önálló futtatáshoz, ugyanazzal a felülettel =====
+const IDB = {
+  _db: null,
+  open() {
+    if (this._db) return this._db;
+    this._db = new Promise((res, rej) => {
+      const r = indexedDB.open('laptrezor', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('kv');
+      r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+    });
+    return this._db;
+  },
+  async tx(mode, fn) {
+    const db = await this.open();
+    return new Promise((res, rej) => {
+      const t = db.transaction('kv', mode), st = t.objectStore('kv'); let out;
+      Promise.resolve(fn(st, v => out = v)).catch(rej);
+      t.oncomplete = () => res(out); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error || new Error('Tárolási hiba (megtelt?)'));
+    });
+  },
+};
+function localDb() {
+  const seg = p => p.split('/').length;
+  const mkDoc = p => ({
+    id: p.split('/').pop(), path: p,
+    get: () => IDB.tx('readonly', (st, set) => { const r = st.get(p); r.onsuccess = () => set({ id: p.split('/').pop(), exists: r.result !== undefined, data: () => r.result }); }),
+    set: d => IDB.tx('readwrite', st => { st.put(JSON.parse(JSON.stringify(d)), p); }),
+    delete: () => IDB.tx('readwrite', st => { st.delete(p); }),
+    collection: n => mkCol(p + '/' + n),
+  });
+  const mkCol = p => ({
+    path: p, doc: id => mkDoc(p + '/' + id),
+    get: () => IDB.tx('readonly', (st, set) => {
+      const docs = [], range = IDBKeyRange.bound(p + '/', p + '/￿');
+      const r = st.openCursor(range);
+      r.onsuccess = () => { const c = r.result; if (c) { if (seg(c.key) === seg(p) + 1) { const v = c.value; docs.push({ id: c.key.split('/').pop(), exists: true, data: () => v }); } c.continue(); } else set({ docs, size: docs.length, empty: !docs.length }); };
+    }),
+  });
+  return { doc: mkDoc, collection: mkCol };
+}
+
+// ===== Tárolás (Claude Artifact személyes db, vagy helyi IndexedDB) =====
+const Store = {
+  db: null, base: null, queue: new Map(),
+  async init() {
+    try {
+      let db, uid;
+      if (window.claude && typeof window.claude.use === 'function') {
+        const [pdb, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+        uid = user ? await user.id() : null;
+        if (!pdb || !uid) throw new Error(pdb ? 'Nincs bejelentkezett felhasználó-azonosító.' : 'A tárolás ebben a nézetben nem érhető el.');
+        db = pdb; S.backend = 'claude';
+      } else {
+        if (!window.indexedDB) throw new Error('a böngésző nem támogatja a helyi tárolást');
+        db = localDb(); uid = 'local'; S.backend = 'local';
+        await IDB.open();
+        try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch { }
+      }
+      this.db = db;
+      this.base = db.doc(`data/users/${uid}/vault`);
+      const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('időtúllépés')), 10000));
+      const [meta, cards, obs, vals, snaps] = await Promise.race([Promise.all([
+        this.base.get(), this.col('cards').get(), this.col('observations').get(), this.col('valuations').get(), this.col('snapshots').get(),
+      ]), timeout]);
+      S.meta = meta.exists ? meta.data() : null;
+      if (S.meta?.settings) S.settings = { ...S.settings, ...S.meta.settings };
+      if (S.meta && S.meta.schemaVersion > SCHEMA_VERSION) S.storageNote = 'Az adatok újabb sémaverzióval készültek; frissítsd az alkalmazást.';
+      S.cards = cards.docs.map(d => ({ ...d.data() }));
+      S.obs = obs.docs.map(d => ({ ...d.data() }));
+      S.vals = vals.docs.map(d => ({ ...d.data() }));
+      S.snaps = snaps.docs.map(d => ({ ...d.data() })).sort((a, b) => a.timestamp < b.timestamp ? -1 : 1);
+      S.mode = 'db';
+      if (!S.meta) await this.saveMeta();
+    } catch (e) {
+      S.mode = 'memory';
+      S.storageNote = 'A tartós tárolás nem érhető el (' + (e.message || e.code || 'ismeretlen ok') + '). Az adatok csak ennek a lapnak a bezárásáig maradnak meg – exportálj JSON-t!';
+    }
+  },
+  col(name) { return this.base.collection(name); },
+  enqueue(path, fn) {
+    const prev = this.queue.get(path) || Promise.resolve();
+    const p = prev.catch(() => { }).then(fn);
+    this.queue.set(path, p);
+    S.pending++; updateSaving();
+    return p.finally(() => { S.pending--; updateSaving(); if (this.queue.get(path) === p) this.queue.delete(path); });
+  },
+  async put(coll, obj) {
+    if (S.mode !== 'db') return;
+    const clean = JSON.parse(JSON.stringify(obj));
+    try { await this.enqueue(coll + '/' + obj.id, () => this.col(coll).doc(obj.id).set(clean)); }
+    catch (e) { storeError(e); throw e; }
+  },
+  async del(coll, id) {
+    if (S.mode !== 'db') return;
+    try { await this.enqueue(coll + '/' + id, () => this.col(coll).doc(id).delete()); }
+    catch (e) { storeError(e); throw e; }
+  },
+  async getImage(id) {
+    if (S.mode !== 'db') return memImages.get(id) || null;
+    const d = await this.col('images').doc(id).get();
+    return d.exists ? d.data() : null;
+  },
+  async putImage(img) { if (S.mode === 'db') await this.put('images', img); else memImages.set(img.id, img); },
+  async delImage(id) { if (S.mode === 'db') await this.del('images', id); else memImages.delete(id); },
+  async allImages() {
+    if (S.mode !== 'db') return [...memImages.values()];
+    const s = await this.col('images').get();
+    return s.docs.map(d => d.data());
+  },
+  async saveMeta() {
+    S.meta = { schemaVersion: SCHEMA_VERSION, app: 'LapTrezor', settings: S.settings, createdAt: S.meta?.createdAt || nowIso(), updatedAt: nowIso() };
+    if (S.mode === 'db') { try { await this.enqueue('meta', () => this.base.set(JSON.parse(JSON.stringify(S.meta)))); } catch (e) { storeError(e); } }
+  },
+};
+const memImages = new Map();
+const imgCache = new Map();
+function storeError(e) {
+  const c = e?.code;
+  toast(c === 'quota_exceeded' ? 'A tárhely megtelt – törölj régi képeket vagy lapokat. (' + (e.message || '') + ')'
+    : c === 'revoked' ? 'A tároló hozzáférés megszűnt ebben a nézetben.'
+      : 'Mentési hiba: ' + (e?.message || c || e), true);
+}
+function updateSaving() { const el = $('#saving'); if (el) el.style.opacity = S.pending ? '1' : '0'; }
+
+// ===== AI (Claude, előfizetésből) =====
+const AI = {
+  sample: null,
+  async init() {
+    try {
+      this.sample = window.claude ? await window.claude.use('sample') : null;
+      S.ai.available = !!this.sample;
+      if (this.sample && this.sample.limits) { const l = await this.sample.limits(); S.ai.images = !!(l && l.images); }
+      else S.ai.images = false;
+    } catch { S.ai.available = false; S.ai.images = false; }
+    if (S.view === 'scan' || S.view === 'settings') render();
+  },
+};
+const ID_PROMPT = `Kosárlabda gyűjtői kártya fotóit kapod (előlap, és ha van, hátlap). Feladat: azonosítás és vizuális állapotbecslés.
+SZABÁLYOK:
+- Csak azt írd, ami a képen ténylegesen látható vagy egyértelműen kiolvasható. Ne találj ki adatot. Ha valami nem olvasható vagy bizonytalan, az értéke legyen null, és vedd fel az "unreadable" listába.
+- Minden mezőhöz adj bizonyossági szintet: "magas", "közepes", "alacsony" vagy "olvashatatlan".
+- Az állapotbecslés csak vizuális, nem hivatalos minősítés; 1–10 skála, fél pontos lépésekkel. Ha a fotó minősége nem teszi lehetővé, legyen null.
+- A sorszámozás formátuma pl. "24/99". A lapszám pl. "#117".
+Válaszolj KIZÁRÓLAG egy JSON objektummal, magyarázat nélkül, ebben a szerkezetben:
+{"player":string|null,"year":string|null,"manufacturer":string|null,"set":string|null,"cardNumber":string|null,"parallel":string|null,"serialNumber":string|null,
+"features":{"rookie":bool,"autograph":bool,"patch":bool,"serialNumbered":bool},
+"confidence":{"player":"…","year":"…","manufacturer":"…","set":"…","cardNumber":"…","parallel":"…","serialNumber":"…"},
+"overallConfidence":0-1 közötti szám,"unreadable":[mezőnevek],"warnings":[rövid magyar megjegyzések],
+"condition":{"centering":szám|null,"corners":szám|null,"edges":szám|null,"surface":szám|null,"overall":szám|null,"notes":"rövid magyar indoklás"}}`;
+
+// ===== Képfeldolgozás =====
+function loadImg(src) { return new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('A kép nem olvasható.')); im.src = src; }); }
+function canvasFrom(img, max, rot = 0) {
+  const s = Math.min(1, max / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+  const w = Math.round((img.naturalWidth || img.width) * s), h = Math.round((img.naturalHeight || img.height) * s);
+  const c = document.createElement('canvas');
+  const r = ((rot % 360) + 360) % 360;
+  c.width = r % 180 ? h : w; c.height = r % 180 ? w : h;
+  const x = c.getContext('2d');
+  x.translate(c.width / 2, c.height / 2); x.rotate(r * Math.PI / 180); x.drawImage(img, -w / 2, -h / 2, w, h);
+  return c;
+}
+function dHash(img) {
+  const c = document.createElement('canvas'); c.width = 9; c.height = 8;
+  const x = c.getContext('2d'); x.drawImage(img, 0, 0, 9, 8);
+  const d = x.getImageData(0, 0, 9, 8).data; let bits = '';
+  for (let y = 0; y < 8; y++) for (let i = 0; i < 8; i++) {
+    const p = (y * 9 + i) * 4, q = p + 4;
+    bits += (d[p] * .3 + d[p + 1] * .59 + d[p + 2] * .11) > (d[q] * .3 + d[q + 1] * .59 + d[q + 2] * .11) ? '1' : '0';
+  }
+  let hex = ''; for (let i = 0; i < 64; i += 4) hex += parseInt(bits.slice(i, i + 4), 2).toString(16);
+  return hex;
+}
+function dataUrlToBlob(u) {
+  const [h, b] = u.split(','); const bin = atob(b); const a = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i);
+  return new Blob([a], { type: (h.match(/data:([^;]+)/) || [])[1] || 'image/jpeg' });
+}
+function toBlob(c, q) { return new Promise(r => c.toBlob(r, 'image/jpeg', q)); }
+async function processImage(src, rot = 0) {
+  const img = await loadImg(src);
+  const aiC = canvasFrom(img, 1400, rot);
+  const blob = await toBlob(aiC, .86);
+  let max = 760, q = .78, dataUrl;
+  do { dataUrl = canvasFrom(img, max, rot).toDataURL('image/jpeg', q); max -= 80; q -= .05; } while (dataUrl.length > 230000 && max > 300);
+  const thumb = canvasFrom(img, 240, rot).toDataURL('image/jpeg', .72);
+  const rotated = await loadImg(dataUrl);
+  return { blob, dataUrl, thumb, hash: dHash(rotated), w: rotated.width, h: rotated.height };
+}
+
+// ===== Navigáció =====
+function go(view, params = {}, push = true) {
+  if (push) S.stack.push({ view: S.view, params: S.params });
+  if (S.stack.length > 30) S.stack.shift();
+  S.view = view; S.params = params; render(); window.scrollTo(0, 0);
+}
+function back() { const p = S.stack.pop(); if (p) { S.view = p.view; S.params = p.params; render(); window.scrollTo(0, 0); } else go('home', {}, false); }
+function tab(view) { S.stack = []; go(view, {}, false); }
+
+// ===== Segédek =====
+let toastT;
+function toast(msg, err = false) {
+  const el = $('#toast'); el.className = 'toast' + (err ? ' err' : ''); el.textContent = msg; el.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(() => el.hidden = true, err ? 6500 : 3200);
+}
+function busy(msg, onCancel) {
+  const el = $('#busy');
+  if (!msg) { el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  el.innerHTML = `<div><div class="spin"></div><div style="font-weight:700">${esc(msg)}</div>${onCancel ? '<button class="btn sm mt" id="busyCancel">Megszakítás</button>' : ''}</div>`;
+  if (onCancel) $('#busyCancel').onclick = onCancel;
+}
+function modal(html, onMount) {
+  const el = $('#modal'); el.hidden = false;
+  el.innerHTML = `<div class="sheet" role="dialog">${html}</div>`;
+  el.onclick = e => { if (e.target === el) closeModal(); };
+  el.querySelectorAll('[data-close]').forEach(b => b.onclick = closeModal);
+  onMount && onMount(el);
+}
+function closeModal() { const el = $('#modal'); el.hidden = true; el.innerHTML = ''; }
+function confirmBox(title, text, okLabel = 'Igen', danger = false) {
+  return new Promise(res => {
+    modal(`<h3>${esc(title)}</h3><p class="muted">${text}</p><div class="two mt"><button class="btn" data-x="0">Mégse</button><button class="btn ${danger ? 'danger' : 'primary'}" data-x="1">${esc(okLabel)}</button></div>`,
+      el => el.querySelectorAll('[data-x]').forEach(b => b.onclick = () => { closeModal(); res(b.dataset.x === '1'); }));
+  });
+}
+async function copyText(text, label = 'Vágólapra másolva') {
+  try { await navigator.clipboard.writeText(text); toast(label); }
+  catch { modal(`<h3>Másold ki kézzel</h3><p class="muted small">A böngésző nem engedte a vágólapot. Jelöld ki és másold:</p><label class="field"><textarea readonly style="min-height:220px">${esc(text)}</textarea></label><button class="btn block mt" data-close>Bezár</button>`); }
+}
+async function saveFile(filename, data) {
+  let dl = null;
+  try { dl = window.claude ? await window.claude.use('downloads') : null; } catch { }
+  if (dl) {
+    try { await dl.save({ filename, data }); toast('Fájl mentve: ' + filename); return; }
+    catch (e) { if (e && (e.code === 'cancelled' || e.code === 'declined' || e.code === 'user_cancelled')) return toast('Mentés megszakítva.'); }
+  }
+  if (!window.claude) {
+    try {
+      const type = filename.endsWith('.json') ? 'application/json' : 'text/csv;charset=utf-8';
+      const file = new File([data], filename, { type });
+      if (navigator.canShare && navigator.canShare({ files: [file] }) && /Android|iPhone|iPad/i.test(navigator.userAgent)) {
+        try { await navigator.share({ files: [file], title: filename }); return; } catch (e) { if (e.name === 'AbortError') return; }
+      }
+      const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.download = filename;
+      document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+      toast('Letöltés: ' + filename); return;
+    } catch { }
+  }
+  modal(`<h3>${esc(filename)}</h3><p class="muted small">A letöltés itt nem érhető el. Másold ki a tartalmat, és mentsd el egy fájlba.</p><label class="field"><textarea readonly style="min-height:240px">${esc(data.length > 400000 ? data.slice(0, 400000) + '\n…(csonkolva a megjelenítéshez – a Másolás gomb a teljes tartalmat másolja)' : data)}</textarea></label><div class="two mt"><button class="btn" data-close>Bezár</button><button class="btn primary" id="cpy">Másolás</button></div>`,
+    el => el.querySelector('#cpy').onclick = () => copyText(data));
+}
+const cardById = id => S.cards.find(c => c.id === id);
+const cardTitle = c => [c.player || 'Ismeretlen játékos'].join('');
+const cardSub = c => [c.year, c.set, c.cardNumber].filter(Boolean).join(' · ');
+const curVal = c => latestValuation(c.id, S.vals);
+const unitVal = c => { const v = curVal(c); return v && v.estimatedUnitPriceHuf != null ? v.estimatedUnitPriceHuf : null; };
+const rates = () => ({ USD: Number(S.settings.usdHuf) || 0, EUR: Number(S.settings.eurHuf) || 0 });
+function placeholderCard(c) {
+  const ini = (c?.player || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  return `<svg viewBox="0 0 100 140" width="100%" height="100%"><defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a2d35"/><stop offset="1" stop-color="#16181d"/></linearGradient></defs><rect width="100" height="140" fill="url(#pg)"/><rect x="6" y="6" width="88" height="128" rx="6" fill="none" stroke="#D9AC54" stroke-opacity=".5"/><circle cx="50" cy="60" r="22" fill="none" stroke="#FF7A1A" stroke-opacity=".6" stroke-width="2"/><text x="50" y="67" text-anchor="middle" font-size="20" font-weight="800" fill="#FF9A4D">${esc(ini)}</text></svg>`;
+}
+const thumbHtml = c => c?.thumb ? `<img src="${c.thumb}" alt="">` : placeholderCard(c);
+function staleState(c) {
+  const v = curVal(c);
+  const newerObs = S.obs.some(o => o.cardId === c.id && (!v || (o.observedAt || '') > v.calculatedAt));
+  if (newerObs) return ['o', 'Új ár vár feldolgozásra'];
+  if (!v || v.estimatedUnitPriceHuf == null) return ['', 'Nincs ár'];
+  if (isStale(v, S.settings.staleDays)) return ['y', 'Elavult becslés'];
+  return ['g', 'Friss'];
+}
+
+// ===== Grafikon =====
+const fmtAxis = v => v >= 1e6 ? (v / 1e6).toLocaleString('hu-HU', { maximumFractionDigits: 1 }) + ' M Ft' : Math.round(v / 1000).toLocaleString('hu-HU') + ' e Ft';
+function lineChart(pts, { h = 150, fmt = fmtAxis } = {}) {
+  if (pts.length < 2) return `<div class="muted small" style="padding:18px 0;text-align:center">${pts.length ? 'Egy adatpont – a grafikonhoz legalább kettő kell.' : 'Még nincs adat a grafikonhoz.'}</div>`;
+  const W = 340, H = h, L = 58, R = 8, T = 10, B = 22;
+  const xs = pts.map(p => p.t), ys = pts.map(p => p.v);
+  let x0 = Math.min(...xs), x1 = Math.max(...xs); if (x0 === x1) x1 = x0 + 1;
+  let y0 = Math.min(...ys), y1 = Math.max(...ys); const pad = (y1 - y0) * .15 || y1 * .1 || 1; y0 = Math.max(0, y0 - pad); y1 += pad;
+  const X = t => L + (t - x0) / (x1 - x0) * (W - L - R), Y = v => T + (1 - (v - y0) / (y1 - y0)) * (H - T - B);
+  const d = pts.map((p, i) => (i ? 'L' : 'M') + X(p.t).toFixed(1) + ' ' + Y(p.v).toFixed(1)).join(' ');
+  const area = d + ` L${X(x1).toFixed(1)} ${H - B} L${X(x0).toFixed(1)} ${H - B} Z`;
+  let grid = '';
+  for (let i = 0; i <= 3; i++) { const v = y0 + (y1 - y0) * i / 3, y = Y(v); grid += `<line x1="${L}" x2="${W - R}" y1="${y}" y2="${y}" stroke="rgba(255,255,255,.06)"/><text x="${L - 6}" y="${y + 3}" text-anchor="end" font-size="9" fill="#9CA0A8">${esc(fmt(v))}</text>`; }
+  let lbl = ''; const n = Math.min(5, pts.length);
+  for (let i = 0; i < n; i++) { const t = x0 + (x1 - x0) * i / (n - 1 || 1); lbl += `<text x="${X(t)}" y="${H - 6}" text-anchor="middle" font-size="9" fill="#9CA0A8">${new Date(t).toLocaleDateString('hu-HU', { month: 'short', day: 'numeric' })}</text>`; }
+  const dots = pts.map(p => `<circle cx="${X(p.t)}" cy="${Y(p.v)}" r="2.6" fill="#FF9A4D"/>`).join('');
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}"><defs><linearGradient id="ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF7A1A" stop-opacity=".35"/><stop offset="1" stop-color="#FF7A1A" stop-opacity="0"/></linearGradient></defs>${grid}<path d="${area}" fill="url(#ar)"/><path d="${d}" fill="none" stroke="#FF7A1A" stroke-width="2.2" stroke-linejoin="round"/>${dots}${lbl}</svg>`;
+}
+function spark(vals) {
+  if (vals.length < 2) return '';
+  const mn = Math.min(...vals), mx = Math.max(...vals), r = mx - mn || 1;
+  const d = vals.map((v, i) => (i ? 'L' : 'M') + (i / (vals.length - 1) * 116 + 2).toFixed(1) + ' ' + (52 - (v - mn) / r * 46).toFixed(1)).join(' ');
+  const up = vals[vals.length - 1] >= vals[0];
+  return `<svg class="spark" viewBox="0 0 120 56"><path d="${d}" fill="none" stroke="${up ? '#22C55E' : '#EF5555'}" stroke-width="2.4" stroke-linejoin="round"/></svg>`;
+}
+
+// ===== Render =====
+function render() {
+  const v = S.view;
+  const html = v === 'home' ? vHome() : v === 'scan' ? vScan() : v === 'identify' ? vIdentify() : v === 'card' ? vCard()
+    : v === 'value' ? vValue() : v === 'market' ? vMarket() : v === 'settings' ? vSettings() : vHome();
+  $('#app').innerHTML = (S.mode === 'loading' ? vLoading() : html);
+  const navOn = { home: 'home', card: 'home', value: 'home', scan: 'scan', identify: 'scan', market: 'market', settings: 'settings' }[v];
+  $('#nav').innerHTML = `<div class="in">${[['home', 'Gyűjtemény', I.home], ['scan', 'Szkennelés', I.scan], ['market', 'Piac', I.market], ['settings', 'Beállítások', I.gear]]
+    .map(([k, l, ic]) => `<button class="${navOn === k ? 'on' : ''}" data-tab="${k}">${ic}${l}</button>`).join('')}</div>`;
+  $('#nav').querySelectorAll('[data-tab]').forEach(b => b.onclick = () => tab(b.dataset.tab === 'scan' ? (resetScan(), 'scan') : b.dataset.tab));
+  bind();
+}
+const topBar = (title, { backBtn = true, right = '' } = {}) =>
+  `<div class="top">${backBtn ? `<button class="iconbtn" data-act="back" aria-label="Vissza">${I.back}</button>` : '<span style="width:40px"></span>'}<h1>${esc(title)}</h1>${right || '<span style="width:40px"></span>'}</div>`;
+const vLoading = () => `<div class="busy" style="position:static;min-height:80vh"><div><div class="spin"></div>Gyűjtemény betöltése…</div></div>`;
+const storageBanner = () => S.mode === 'memory' || S.storageNote ? `<div class="banner ${S.mode === 'memory' ? 'err' : ''}">${esc(S.storageNote)}</div>` : '';
+
+function vHome() {
+  const p = portfolioNow(S.cards, S.vals);
+  const last = S.snaps[S.snaps.length - 1];
+  const sp = last ? splitChange(last.valuationsUsed, p.items) : null;
+  const pct = sp && sp.totalPrev ? sp.market / sp.totalPrev * 100 : null;
+  const held = S.cards.filter(c => (Number(c.quantity) || 0) > 0);
+  const avg = p.items.length ? p.total / p.items.reduce((s, i) => s + i.qty, 0) : null;
+  const best = [...held].filter(c => unitVal(c) != null).sort((a, b) => unitVal(b) - unitVal(a)).slice(0, 8);
+  const goldMin = best.length ? unitVal(best[Math.min(2, best.length - 1)]) : Infinity;
+  let list = (S.showSold ? S.cards : held).filter(c => {
+    const q = S.homeQuery.trim().toLowerCase(); if (!q) return true;
+    return [c.player, c.year, c.set, c.manufacturer, c.cardNumber, c.parallel, ...(c.tags || [])].join(' ').toLowerCase().includes(q);
+  });
+  const sorters = { value: (a, b) => (unitVal(b) ?? -1) - (unitVal(a) ?? -1), name: (a, b) => (a.player || '').localeCompare(b.player || '', 'hu'), year: (a, b) => String(b.year || '').localeCompare(String(a.year || '')), new: (a, b) => (b.createdAt || '').localeCompare(a.createdAt || '') };
+  list.sort(sorters[S.homeSort]);
+  const tc = (c, gold) => { const u = unitVal(c); return `<div class="tcard" data-open="${c.id}"><div class="img">${thumbHtml(c)}${c.quantity > 1 ? `<span class="qty">×${c.quantity}</span>` : ''}${c.quantity <= 0 ? '<span class="qty">eladva</span>' : ''}</div><span class="tag num ${u == null ? 'none' : gold && u >= goldMin ? 'goldt' : ''}">${u == null ? 'nincs ár' : fmtHuf(u)}</span></div>`; };
+  const empty = !S.cards.length;
+  return `<div class="top brand"><span style="display:flex">${I.logo}</span><h1>LapTrezor</h1><span id="saving" class="small muted" style="opacity:0;transition:.3s">mentés…</span><button class="iconbtn" data-tab2="settings" aria-label="Beállítások">${I.gear}</button></div>
+  ${storageBanner()}
+  <div class="glass hero pad">
+    <div class="lbl">Gyűjteményem értéke</div>
+    <div class="big num">${fmtHuf(p.total)}</div>
+    ${sp ? `<div class="small ${sp.market >= 0 ? 'pos' : 'neg'} num">${sp.market >= 0 ? '▲' : '▼'} Piaci változás: ${fmtSigned(sp.market)}${pct != null ? ` (${fmtPct(pct)})` : ''}</div>
+      <div class="tiny muted num">Vétel/eladás hatása: ${fmtSigned(sp.net)} · utolsó frissítés: ${fmtDT(last.timestamp)}</div>`
+      : `<div class="small muted">${p.items.length ? 'Még nincs portfólió-frissítés – a Piac fülön indíthatod.' : 'Még nincs ellenőrzött árral rendelkező lap.'}</div>`}
+    ${p.missing ? `<div class="tiny" style="color:var(--warn);margin-top:4px">${p.missing} lapnak nincs ára – az összeg nem tartalmazza.</div>` : ''}
+    ${spark(S.snaps.map(s => s.totalValueHuf))}
+  </div>
+  <div class="glass stats">
+    <div><b class="num">${p.count}</b><span>lap</span></div>
+    <div><b class="num">${avg == null ? '—' : fmtHuf(avg)}</b><span>átlagos érték</span></div>
+    <div><b class="num ${p.unrealized >= 0 ? 'pos' : 'neg'}">${p.items.length ? fmtSigned(p.unrealized) : '—'}</b><span>nem realizált eredmény</span></div>
+  </div>
+  ${empty ? `<div class="glass empty mt2">${emptyArt()}<h3>Még üres a trezor</h3><p class="muted small">Fotózd le az első lapodat – Claude azonosítja, te jóváhagyod, és bekerül a gyűjteménybe.</p><button class="btn sm" data-act="manualNew">${I.edit} Kézi felvétel</button></div>` : `
+  ${best.length ? `<div class="row between"><h2>Legértékesebb lapjaim</h2></div><div class="hscroll">${best.map(c => tc(c, true)).join('')}</div>` : ''}
+  <div class="row between"><h2>Teljes gyűjtemény (${held.length})</h2><button class="btn sm" data-act="manualNew">${I.plus} Kézi</button></div>
+  <div class="search"><input id="q" placeholder="Keresés: játékos, szett, címke…" value="${esc(S.homeQuery)}"><select id="sort"><option value="value">Érték</option><option value="name">Név</option><option value="year">Év</option><option value="new">Legújabb</option></select></div>
+  <label class="check small muted"><input type="checkbox" id="showSold" ${S.showSold ? 'checked' : ''}> Eladott (0 darabos) lapok mutatása</label>
+  <div class="grid4 mt" id="grid">${list.map(c => tc(c, false)).join('') || '<div class="muted small">Nincs találat.</div>'}</div>`}
+  <div style="height:70px"></div>
+  <button class="btn primary fab" data-act="newScan">${I.camera} Új lap szkennelése</button>`;
+}
+function emptyArt() {
+  return `<svg viewBox="0 0 160 200"><defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a2a1a"/><stop offset="1" stop-color="#15161a"/></linearGradient><radialGradient id="gl"><stop offset="0" stop-color="#FF7A1A" stop-opacity=".35"/><stop offset="1" stop-color="#FF7A1A" stop-opacity="0"/></radialGradient></defs><ellipse cx="80" cy="182" rx="60" ry="10" fill="url(#gl)"/><g transform="rotate(-6 80 90)"><rect x="35" y="20" width="90" height="126" rx="8" fill="url(#eg)" stroke="#D9AC54" stroke-width="2"/><rect x="43" y="28" width="74" height="84" rx="4" fill="#1d1f25"/><circle cx="80" cy="66" r="18" fill="none" stroke="#FF7A1A" stroke-width="2.5"/><path d="M62 66h36M80 48v36M68 53c5 4 5 22 0 26M92 53c-5 4-5 22 0 26" stroke="#FF7A1A" stroke-width="1.8" fill="none"/><rect x="47" y="120" width="66" height="6" rx="3" fill="#D9AC54" opacity=".6"/><rect x="57" y="131" width="46" height="4" rx="2" fill="#9CA0A8" opacity=".4"/></g></svg>`;
+}
+
+function resetScan() { S.scan = { side: 'front', front: null, back: null }; }
+function vScan() {
+  const cur = S.scan[S.scan.side];
+  const aiNote = S.backend === 'local' ? `<div class="banner info"><b>Azonosítás Claude-dal:</b> fotózd le a lapot, majd a „Claude chat módszer” gombbal másold ki az utasítást, és küldd el a fotóval együtt a Claude appban. A kapott választ illeszd vissza ide.</div>`
+    : S.ai.available === false ? `<div class="banner">Az automatikus AI-elemzés ebben a nézetben nem érhető el. Használd a „Claude chat módszert” vagy a kézi kitöltést.</div>`
+    : S.ai.images === false && S.ai.available ? `<div class="banner">A képek átadása az AI-nak itt nem támogatott. Használd a „Claude chat módszert” vagy a kézi kitöltést.</div>` : '';
+  return `${topBar('Lap szkennelése')}
+  <div class="seg"><button class="${S.scan.side === 'front' ? 'on' : ''}" data-side="front">Előlap${S.scan.front ? ' ✓' : ''}</button><button class="${S.scan.side === 'back' ? 'on' : ''}" data-side="back">Hátlap${S.scan.back ? ' ✓' : ''}</button></div>
+  <div class="frame"><i></i>${cur ? `<img src="${cur.dataUrl}" alt="">` : `<div class="ph">${I.camera.replace('<svg', '<svg style="width:40px;height:40px;opacity:.5;display:block;margin:0 auto 8px"')}${S.scan.side === 'front' ? 'Előlap fotója' : 'Hátlap fotója (ajánlott: évszám, lapszám, sorszám)'}</div>`}</div>
+  <div class="hint">${I.scan.replace('<svg', '<svg style="width:16px;height:16px"')} Igazítsd a lapot a keretbe, tükröződés nélkül</div>
+  <div class="camrow">
+    <label class="circ" aria-label="Forgatás" data-act="rotate">${I.rotate}</label>
+    <label class="shutter" aria-label="Fotó készítése"><input type="file" accept="image/*" capture="environment" class="filehidden" data-file="cam"></label>
+    <label class="circ" aria-label="Galéria">${I.image}<input type="file" accept="image/*" class="filehidden" data-file="gal"></label>
+  </div>
+  ${aiNote}
+  ${S.ai.available && S.ai.images ? `<button class="btn primary block mt2" data-act="analyze" ${S.scan.front ? '' : 'disabled'}>Elemzés Claude-dal →</button>
+  <div class="two mt"><button class="btn sm" data-act="chatMethod">${I.copy} Claude chat módszer</button><button class="btn sm" data-act="manualFromScan">${I.edit} Kézi kitöltés</button></div>`
+  : `<button class="btn primary block mt2" data-act="chatMethod">${I.copy} Claude chat módszer →</button>
+  <button class="btn block mt" data-act="manualFromScan">${I.edit} Kézi kitöltés</button>`}
+  <p class="tiny muted mt">A fotók csak a te személyes tárhelyedre kerülnek, és csak mentés után. Semmi nem mentődik jóváhagyás nélkül.</p>`;
+}
+
+function newDraft(src) {
+  return {
+    source: src, player: '', year: '', manufacturer: '', set: '', cardNumber: '', parallel: '', serialNumber: '',
+    features: { rookie: false, autograph: false, patch: false, serialNumbered: false }, confidence: {}, unreadable: [], warnings: [],
+    overallConfidence: null, condition: null, quantity: 1, acquisitionUnitPriceHuf: '', acquisitionDate: today(), valuationBasis: 'RAW',
+    images: { front: S.scan.front, back: S.scan.back }, dupChoice: null,
+  };
+}
+function applyAI(d, j) {
+  for (const k of ['player', 'year', 'manufacturer', 'set', 'cardNumber', 'parallel', 'serialNumber']) d[k] = j[k] == null ? '' : String(j[k]);
+  if (j.features) for (const k of Object.keys(d.features)) d.features[k] = !!j.features[k];
+  d.confidence = j.confidence || {}; d.unreadable = Array.isArray(j.unreadable) ? j.unreadable : [];
+  d.warnings = Array.isArray(j.warnings) ? j.warnings : []; d.overallConfidence = typeof j.overallConfidence === 'number' ? j.overallConfidence : null;
+  const c = j.condition;
+  if (c && ['centering', 'corners', 'edges', 'surface'].some(k => typeof c[k] === 'number'))
+    d.condition = { centering: c.centering ?? null, corners: c.corners ?? null, edges: c.edges ?? null, surface: c.surface ?? null, overall: c.overall ?? null, notes: c.notes || '', method: d.source === 'paste' ? 'Claude chat, vizuális (nem hivatalos)' : 'Claude AI, vizuális (nem hivatalos)', estimatedAt: nowIso() };
+}
+
+function vIdentify() {
+  const d = S.draft; if (!d) return `${topBar('Azonosítás')}<p class="muted">Nincs folyamatban lévő azonosítás.</p>`;
+  const F = [['player', 'Játékos'], ['year', 'Évjárat'], ['manufacturer', 'Gyártó'], ['set', 'Sorozat (szett)'], ['cardNumber', 'Lapszám'], ['parallel', 'Párhuzamos / változat'], ['serialNumber', 'Sorszámozás']];
+  const confB = k => { const c = d.unreadable.includes(k) ? 'olvashatatlan' : d.confidence[k]; return c ? `<span class="conf ${confClass(c)}">${esc(c)}</span>` : ''; };
+  const dups = findDuplicates(d, S.cards, d.images.front?.hash);
+  const front = d.images.front?.dataUrl;
+  return `${topBar('Azonosítás eredménye')}
+  <div class="idimg">${front ? `<img src="${front}" alt="">` : placeholderCard(d)}</div>
+  <div class="pname">${esc(d.player || 'Ismeretlen játékos')}</div>
+  ${d.source !== 'manual' ? `<div class="chips">${d.overallConfidence != null ? `<span class="chip ${d.overallConfidence >= .75 ? 'g' : d.overallConfidence >= .45 ? 'y' : 'r'}">Bizonyosság: ${Math.round(d.overallConfidence * 100)}%</span>` : ''}<span class="chip">${d.source === 'ai' ? 'Claude AI' : 'Claude chat (beillesztett)'}</span></div>` : ''}
+  ${d.warnings.length || d.unreadable.length ? `<div class="banner">${d.unreadable.length ? `<b>Nem olvasható:</b> ${esc(d.unreadable.join(', '))}<br>` : ''}${d.warnings.map(esc).join('<br>')}</div>` : ''}
+  <div class="glass mt">${F.map(([k, l]) => `<div class="frow"><label>${l} ${confB(k)}</label><input data-d="${k}" value="${esc(d[k])}" placeholder="—"></div>`).join('')}</div>
+  <div class="badges mt">${FEATURES.map(([k, l, ic]) => `<div class="badge ${d.features[k] ? 'on' : ''}" data-feat="${k}">${ic}${l}</div>`).join('')}</div>
+  <p class="tiny muted">Koppints a jelvényekre a javításhoz.</p>
+  <h2>Saját példány</h2>
+  <div class="glass">
+    <div class="frow"><label>Darabszám</label><input data-d="quantity" type="number" min="1" inputmode="numeric" value="${esc(d.quantity)}"></div>
+    <div class="frow"><label>Beszerzési egységár (Ft)</label><input data-d="acquisitionUnitPriceHuf" type="number" min="0" inputmode="numeric" value="${esc(d.acquisitionUnitPriceHuf)}" placeholder="0"></div>
+    <div class="frow"><label>Beszerzés dátuma</label><input data-d="acquisitionDate" type="date" value="${esc(d.acquisitionDate)}"></div>
+    <div class="frow"><label>Példány állapota</label><input data-d="valuationBasis" value="${esc(d.valuationBasis === 'RAW' ? 'Nyers' : d.valuationBasis)}" placeholder="Nyers / PSA 9 / BGS 9.5"></div>
+  </div>
+  <p class="tiny muted">A példány állapota dönti el, mely eladási árak számítanak bele a becslésbe (nyers lapnál csak nyers eladások).</p>
+  ${dups.length ? `<div class="banner err mt"><b>Lehetséges duplikátum!</b>${dups.map(x => `<div class="row mt" style="gap:10px"><div class="thumb" style="width:40px">${thumbHtml(x.card)}</div><div class="grow"><b>${esc(cardTitle(x.card))}</b><div class="tiny">${esc(cardSub(x.card))} · ${x.card.quantity} db · ${esc(x.reasons.join(', '))}</div></div></div>`).join('')}
+    <label class="check"><input type="radio" name="dup" value="${dups[0].card.id}" ${d.dupChoice === dups[0].card.id ? 'checked' : ''}> Darabszám növelése a meglévő lapon (${esc(cardTitle(dups[0].card))})</label>
+    <label class="check"><input type="radio" name="dup" value="new" ${d.dupChoice === 'new' ? 'checked' : ''}> Mégis új, külön lapként mentem</label></div>` : ''}
+  <button class="btn primary block mt2" data-act="saveDraft" ${dups.length && !d.dupChoice ? 'disabled' : ''}>${dups.length && d.dupChoice && d.dupChoice !== 'new' ? 'Darabszám növelése' : 'Jóváhagyás és mentés'} →</button>
+  <button class="btn block mt" data-act="discardDraft">Elvetés</button>`;
+}
+
+function featureBadges(c, ro = true) {
+  const f = c.features || [];
+  return `<div class="badges">${FEATURES.map(([k, l, ic]) => `<div class="badge ro ${f.includes(k) ? 'on' : ''}">${ic}${l}</div>`).join('')}</div>`;
+}
+
+function vCard() {
+  const c = cardById(S.params.id); if (!c) return `${topBar('Lap részletei')}<p class="muted">A lap nem található.</p>`;
+  const v = curVal(c), u = unitVal(c), q = Number(c.quantity) || 0;
+  const cost = (Number(c.acquisitionUnitPriceHuf) || 0) * q, val = u != null ? u * q : null;
+  const pnl = val != null ? val - cost : null, pct = pnl != null && cost ? pnl / cost * 100 : null;
+  const [sc, sl] = staleState(c);
+  const hist = S.vals.filter(x => x.cardId === c.id).sort((a, b) => b.calculatedAt.localeCompare(a.calculatedAt));
+  return `${topBar('Lap részletei', { right: `<button class="iconbtn" data-act="cardMenu" aria-label="Műveletek">${I.more}</button>` })}
+  <div class="glass pad det-head">
+    <div class="thumb">${thumbHtml(c)}</div>
+    <div style="min-width:0"><div class="nm">${esc(cardTitle(c))}</div>
+      <div class="muted small">${esc([c.year, c.manufacturer, c.set].filter(Boolean).join(' · '))}</div>
+      <div class="small">${esc(c.cardNumber || '')}</div><div class="small gold">${esc(c.parallel || '')}</div>
+      ${c.serialNumber ? `<span class="chip mt" style="margin-top:6px">Számozott: ${esc(c.serialNumber)}</span>` : ''}</div>
+  </div>
+  <div class="mt">${featureBadges(c)}</div>
+  <div class="glass mt">
+    <div class="kv"><div><div class="muted small">Vételár (egység)</div><div class="v num">${fmtHuf(Number(c.acquisitionUnitPriceHuf) || 0)}</div><div class="tiny muted">${q} db · ${fmtDate(c.acquisitionDate)}</div></div>
+    <div><div class="muted small">Aktuális érték <span class="tiny">(becsült, egység)</span></div><div class="v num ${u != null ? '' : 'muted'}">${fmtHuf(u)}</div><span class="chip ${sc}" style="margin-top:4px;font-size:11px;padding:2px 8px">${sl}</span></div></div>
+    <div class="pnl"><div><div class="muted small">Eredmény (nem realizált, ${q} db)</div><div class="v num ${pnl == null ? 'muted' : pnl >= 0 ? 'pos' : 'neg'}" style="font-size:21px;font-weight:800">${pnl == null ? 'nincs ár' : fmtSigned(pnl)}</div></div>${pct != null ? `<span class="pill ${pct >= 0 ? 'pos' : 'neg'}">${fmtPct(pct)}</span>` : ''}</div>
+    ${v && v.estimatedUnitPriceHuf != null ? `<div class="pad tiny muted" style="border-top:1px solid var(--line)">Forrás: ${esc(v.method)} · tartomány ${fmtHuf(v.lowHuf)} – ${fmtHuf(v.highHuf)} · bizonyosság: ${esc(v.confidence)} · számolva: ${fmtDT(v.calculatedAt)} · legutóbbi eladás: ${fmtDate(v.newestTransactionDate)}</div>` : ''}
+  </div>
+  <button class="btn primary block mt" data-act="openValue">Állapot és érték →</button>
+  <h3 class="mt2">Fotók</h3>
+  <div class="photos" id="photos"><div class="p">betöltés…</div><div class="p">betöltés…</div></div>
+  <div class="glass pad mt"><div class="row between"><h3 style="margin:0">${I.edit.replace('<svg', '<svg style="width:16px;height:16px;vertical-align:-2px"')} Megjegyzés</h3><button class="iconbtn" data-act="editNote">${I.edit}</button></div><div class="small" style="white-space:pre-wrap">${esc(c.notes || '—')}</div></div>
+  <div class="glass pad mt"><div class="row between"><h3 style="margin:0">Címkék</h3><button class="iconbtn" data-act="addTag">${I.plus}</button></div>
+    <div class="chips">${(c.tags || []).map((t, i) => `<span class="chip ${['o', 'p', ''][i % 3]}">${esc(t)} <x data-rmtag="${i}">✕</x></span>`).join('') || '<span class="muted small">Nincs címke</span>'}</div></div>
+  ${c.sales?.length ? `<div class="glass pad mt"><h3>Eladások</h3>${c.sales.map(s => `<div class="comp"><span>${fmtDate(s.date)}</span><span>${s.qty} db</span><b class="num">${fmtHuf(s.unitPriceHuf)}</b></div>`).join('')}</div>` : ''}
+  <div class="glass pad mt"><h3>Értékelési előzmények</h3>${hist.length ? hist.map(h => `<div class="comp"><span class="small">${fmtDT(h.calculatedAt)}<div class="tiny muted">${esc(h.method || '')}</div></span><span class="tiny muted">${esc(h.confidence || '')}</span><b class="num">${fmtHuf(h.estimatedUnitPriceHuf)}</b></div>`).join('') : '<span class="muted small">Még nincs becslés.</span>'}</div>
+  <div class="two mt2"><button class="btn" data-act="editCard">${I.edit} Szerkesztés</button><button class="btn" data-act="sellCard">Eladás rögzítése</button></div>
+  <button class="btn danger block mt" data-act="deleteCard">Lap törlése</button>`;
+}
+
+function gradeGroups(c) {
+  const exact = S.obs.filter(o => o.cardId === c.id && o.exactMatch && o.saleType === 'sold');
+  const groups = {};
+  for (const o of exact) (groups[normGrade(o.conditionGrade)] ||= []).push(o);
+  const out = {};
+  for (const [g, arr] of Object.entries(groups)) {
+    const pr = arr.map(o => o.priceHuf);
+    out[g] = { n: arr.length, med: median(pr), lo: Math.min(...pr), hi: Math.max(...pr), last: arr.map(o => o.transactionDate).sort().pop() };
+  }
+  return out;
+}
+
+function vValue() {
+  const c = cardById(S.params.id); if (!c) return `${topBar('Állapot és érték')}<p class="muted">A lap nem található.</p>`;
+  const g = c.visualGradeEstimate;
+  const groups = gradeGroups(c);
+  const keys = ['RAW', 'PSA 9', 'PSA 10', ...Object.keys(groups).filter(k => !['RAW', 'PSA 9', 'PSA 10'].includes(k))];
+  const basis = normGrade(c.valuationBasis);
+  const obs = S.obs.filter(o => o.cardId === c.id).sort((a, b) => b.transactionDate.localeCompare(a.transactionDate));
+  const chartPts = obs.filter(o => o.exactMatch && o.saleType === 'sold' && normGrade(o.conditionGrade) === basis && Date.now() - Date.parse(o.transactionDate) < 183 * 86400000)
+    .map(o => ({ t: Date.parse(o.transactionDate), v: o.priceHuf })).sort((a, b) => a.t - b.t);
+  const chg = chartPts.length >= 2 ? (chartPts[chartPts.length - 1].v - chartPts[0].v) / chartPts[0].v * 100 : null;
+  const [sc, sl] = staleState(c);
+  const bar = (l, v) => `<div class="bar"><span>${l}</span><i><b style="width:${v == null ? 0 : v * 10}%"></b></i><b class="num" style="text-align:right">${v == null ? '—' : v.toLocaleString('hu-HU', { minimumFractionDigits: 1 })}</b></div>`;
+  return `${topBar('Állapot és érték')}
+  <div class="glass pad minicard"><div class="thumb">${thumbHtml(c)}</div><div style="min-width:0"><b class="ell" style="display:block;font-size:17px">${esc(cardTitle(c))}</b><div class="small muted ell">${esc(cardSub(c))}</div><div class="small ell">${esc([c.parallel, c.serialNumber && '/' + String(c.serialNumber).split('/').pop()].filter(Boolean).join(' '))}</div></div></div>
+  <div class="glass pad mt">
+    <div class="grade"><div><b>Becsült állapot</b><div class="tiny muted">vizuális, nem hivatalos grade</div></div><div class="gscore num">${g?.overall != null ? g.overall.toLocaleString('hu-HU', { minimumFractionDigits: 1 }) : '—'}<small>/10</small></div></div>
+    ${bar('Centrálás', g?.centering)}${bar('Sarkok', g?.corners)}${bar('Élek', g?.edges)}${bar('Felület', g?.surface)}
+    ${g?.notes ? `<div class="tiny muted mt">${esc(g.notes)}</div>` : ''}
+    <div class="row between mt"><span class="tiny muted">${g ? esc(g.method || '') + ' · ' + fmtDate(g.estimatedAt) : 'Még nincs állapotbecslés.'}</span><button class="btn sm" data-act="regrade">${I.refresh} ${g ? 'Újrabecslés' : 'Becslés'}</button></div>
+  </div>
+  <div class="row between"><h2>Becsült piaci érték ${I.info.replace('<svg', '<svg style="width:15px;height:15px;vertical-align:-2px;color:var(--orange)"')}</h2><span class="chip ${sc}" style="font-size:11px">${sl}</span></div>
+  <div class="tiles">${keys.slice(0, Math.max(3, keys.length)).map(k => { const x = groups[k]; return `<div class="tile ${k !== 'RAW' ? 'g' : ''} ${k === basis ? '' : ''}" style="${k === basis ? 'outline:2px solid rgba(255,122,26,.6)' : ''}"><div class="t">${k === 'RAW' ? 'Nyers (raw)' : esc(k)}</div><div class="v num">${x ? (x.lo === x.hi ? fmtHuf(x.med) : `${Math.round(x.lo).toLocaleString('hu-HU')} –<br>${fmtHuf(x.hi)}`) : '<span class="muted">nincs adat</span>'}</div>${x ? `<div class="tiny muted">${x.n} eladás · ${fmtDate(x.last)}</div>` : ''}</div>`; }).join('')}</div>
+  <p class="tiny muted">Csak pontos egyezésű, <b>eladott</b> árak. A PSA/BGS megjelölés összehasonlítás, nem a te lapod minősítése. Kiemelve: a te példányod állapota (${esc(gradeLabel(basis))}).</p>
+  <div class="glass pad mt"><div class="row between"><h3 style="margin:0">Ármegfigyelések</h3><span class="tiny muted">${obs.length} db</span></div>
+    ${obs.length ? obs.slice(0, 40).map(o => `<div class="comp"><span class="small">${o.sourceUrl ? `<a href="${esc(o.sourceUrl)}" target="_blank" rel="noopener">${esc(o.sourceName)}</a>` : esc(o.sourceName)} · ${esc(gradeLabel(o.conditionGrade))}<div class="tiny muted">${o.saleType === 'sold' ? 'eladott' : o.saleType === 'listing' ? 'hirdetés (nem számít bele)' : 'kézi'}${o.exactMatch ? '' : ' · nem pontos egyezés'}${o.currency !== 'HUF' ? ` · ${o.priceOriginal} ${o.currency}` : ''}${o.notes ? ' · ' + esc(o.notes) : ''}</div></span><span class="tiny muted">${fmtDate(o.transactionDate)}</span><span style="text-align:right"><b class="num ${o.saleType === 'sold' && o.exactMatch ? 'pos' : 'muted'}">${fmtHuf(o.priceHuf)}</b> <x class="tiny muted" style="cursor:pointer;margin-left:4px" data-rmobs="${o.id}">✕</x></span></div>`).join('') : '<div class="muted small">Még nincs rögzített ár. Valódi eladási adatot vihetsz fel kézzel vagy CSV-ből.</div>'}
+    <div class="two mt"><button class="btn sm" data-act="addObs">${I.plus} Ár rögzítése</button><button class="btn sm" data-act="importObs">CSV import</button></div>
+    <button class="btn sm block mt" data-act="pricePrompt">${I.copy} Árkereső prompt Claude chathez</button>
+  </div>
+  <div class="glass pad mt"><div class="row between"><h3 style="margin:0">Árfolyam (utóbbi 6 hónap, ${esc(gradeLabel(basis))})</h3>${chg != null ? `<span class="chip ${chg >= 0 ? 'g' : 'r'}">${fmtPct(chg)}</span>` : ''}</div>${lineChart(chartPts)}</div>
+  ${gradeVerdict(c, groups)}
+  <button class="btn primary block mt2" data-act="recalcCard">${I.refresh} Érték újraszámolása</button>
+  <p class="tiny muted">Csak akkor ír új értéket, ha a rögzített árak alapján ténylegesen változott a becslés.</p>`;
+}
+
+function gradeVerdict(c, groups) {
+  const raw = groups['RAW'], p9 = groups['PSA 9'], p10 = groups['PSA 10'];
+  const cost = Number(S.settings.gradingCostHuf) || null;
+  const g = c.visualGradeEstimate?.overall;
+  let title = 'Megéri graderelni?', body, good = false;
+  if (normGrade(c.valuationBasis) !== 'RAW') body = 'Ez a példány már minősített (' + esc(gradeLabel(c.valuationBasis)) + ').';
+  else if (!raw || (!p9 && !p10)) body = 'Nincs elég összehasonlító adat a döntéshez: kell nyers és legalább egy PSA 9 vagy PSA 10 eladási ár.';
+  else {
+    const prem9 = p9 ? p9.med - raw.med : null, prem10 = p10 ? p10.med - raw.med : null;
+    const parts = [];
+    if (prem9 != null) parts.push(`PSA 9 esetén a különbözet ${fmtSigned(prem9)} (${fmtPct(prem9 / raw.med * 100)})`);
+    if (prem10 != null) parts.push(`PSA 10 esetén ${fmtSigned(prem10)} (${fmtPct(prem10 / raw.med * 100)})`);
+    if (cost) {
+      const n9 = prem9 != null ? prem9 - cost : null, n10 = prem10 != null ? prem10 - cost : null;
+      if (n9 != null && n9 > 0) { good = true; title = 'Megérheti graderelni'; }
+      else if (n10 != null && n10 > 0) title = 'Csak PSA 10 esetén éri meg';
+      else title = 'A jelenlegi adatok alapján nem éri meg';
+      parts.push(`a beállított ${fmtHuf(cost)} gradelési költséggel számolva`);
+    } else parts.push('állítsd be a gradelési költséget a Beállításokban a pontosabb döntéshez');
+    body = parts.join('; ') + '.' + (g != null ? ` A vizuális becslés ${g}/10 – ez nem garancia a hivatalos eredményre.` : '');
+  }
+  return `<div class="verdict ${good ? '' : 'neutral'} mt">${good ? I.check : I.info.replace('<svg', '<svg style="color:var(--muted)"')}<div><b>${esc(title)}</b><div class="small" style="color:#d8d4cf;margin-top:3px">${body}</div></div></div>`;
+}
+
+function vMarket() {
+  const held = S.cards.filter(c => (Number(c.quantity) || 0) > 0);
+  const last = S.snaps[S.snaps.length - 1];
+  const counts = { g: 0, y: 0, o: 0, '': 0 };
+  held.forEach(c => counts[staleState(c)[0]]++);
+  const pts = S.snaps.map(s => ({ t: Date.parse(s.timestamp), v: s.totalValueHuf }));
+  return `${topBar('Piac', { backBtn: false })}
+  ${storageBanner()}
+  <div class="glass pad">
+    <div class="row between"><b>Portfólió-frissítés</b><span class="tiny muted">${last ? 'utolsó: ' + fmtDT(last.timestamp) : 'még nem volt'}</span></div>
+    <div class="chips mt"><span class="chip g">${counts.g} friss</span><span class="chip y">${counts.y} elavult</span><span class="chip o">${counts.o} új adat</span><span class="chip">${counts['']} nincs ár</span></div>
+    <button class="btn primary block mt" data-act="refreshAll">${I.refresh} Portfólió frissítése</button>
+    <p class="tiny muted">A frissítés a rögzített, ellenőrzött eladási árakból számol újra. Élő piaci adatforrás nincs bekötve, ezért ha nincs új adat, nem ír semmit.</p>
+  </div>
+  <div class="glass pad mt"><h3>Portfólióérték alakulása</h3>${lineChart(pts)}</div>
+  <div class="glass pad mt"><h3>Árak bevitele</h3>
+    <div class="small muted">Valódi eladási adatot háromféleképpen vihetsz be: a lap „Állapot és érték” oldalán egyenként, laponként CSV-ből, vagy itt egyszerre az összes laphoz (a CSV-ben <b>kartya_id</b> oszlop kell).</div>
+    <div class="two mt"><button class="btn sm" data-act="bulkImport">Tömeges CSV import</button><button class="btn sm" data-act="exportCardsCsv">Lapok listája (ID-k)</button></div>
+    <div class="banner info"><b>Tipp – árak Claude chatből:</b> a lap értékoldalán az „Árkereső prompt” gombbal kimásolsz egy kész kérést. Egy webkeresést használó Claude chatbe beillesztve forrásmegjelöléssel ellátott, CSV-formátumú eladási árakat kapsz, amit ide importálhatsz. Importálás előtt nézd át a linkeket.</div>
+  </div>
+  <h2>Lapok állapota</h2>
+  <div class="glass list">${held.map(c => { const [sc, sl] = staleState(c); return `<div class="li" data-openv="${c.id}"><div class="thumb" style="width:38px">${thumbHtml(c)}</div><div class="grow"><b class="ell" style="display:block">${esc(cardTitle(c))}</b><div class="tiny muted ell">${esc(cardSub(c))}</div></div><div style="text-align:right"><b class="num small">${fmtHuf(unitVal(c))}</b><div><span class="chip ${sc}" style="font-size:10px;padding:1px 7px">${sl}</span></div></div></div>`; }).join('') || '<div class="pad muted small">Nincs lap a gyűjteményben.</div>'}</div>
+  <h2>Frissítési napló</h2>
+  <div class="glass list">${[...S.snaps].reverse().slice(0, 30).map(s => `<div class="li" style="cursor:default"><div class="grow"><b class="small">${fmtDT(s.timestamp)}</b><div class="tiny muted">${s.cardsCount} lap · bekerülés ${fmtHuf(s.totalCostBasisHuf)}</div></div><div style="text-align:right"><b class="num small">${fmtHuf(s.totalValueHuf)}</b><div class="tiny num"><span class="${s.marketChangeHuf >= 0 ? 'pos' : 'neg'}">piaci ${fmtSigned(s.marketChangeHuf)}</span> · <span class="muted">vétel/eladás ${fmtSigned(s.netContributionsHuf)}</span></div></div></div>`).join('') || '<div class="pad muted small">Még nincs bejegyzés.</div>'}</div>`;
+}
+
+function vSettings() {
+  const st = S.settings;
+  return `${topBar('Beállítások', { backBtn: false })}
+  <div class="glass pad">
+    <h3>Állapot</h3>
+    <div class="row small"><span class="dot" style="background:${S.mode === 'db' ? 'var(--pos)' : 'var(--neg)'}"></span>Tárolás: ${S.mode !== 'db' ? 'nem tartós – exportálj!' : S.backend === 'local' ? 'ezen a telefonon (böngésző), tartós' : 'Claude-fiókodban, személyes'}</div>
+    ${S.backend === 'local' ? '<div class="tiny muted mt">Az adatok csak ezen az eszközön vannak. Ha törlöd a böngészőadatokat vagy telefont cserélsz, elvesznek – mentsd rendszeresen JSON-ba.</div>' : ''}
+    <div class="row small mt"><span class="dot" style="background:${S.ai.available && S.ai.images ? 'var(--pos)' : S.ai.available == null ? 'var(--muted)' : 'var(--warn)'}"></span>AI képelemzés: ${S.backend === 'local' ? 'Claude chat módszerrel (fotó + bemásolt utasítás)' : S.ai.available == null ? 'ellenőrzés…' : S.ai.available ? (S.ai.images ? 'elérhető (Claude Pro kereten belül)' : 'képek nem támogatottak – Claude chat módszer') : 'nem elérhető – Claude chat módszer'}</div>
+    <div class="tiny muted mt">${S.cards.length} lap · ${S.obs.length} ármegfigyelés · ${S.vals.length} becslés · ${S.snaps.length} pillanatkép · séma v${SCHEMA_VERSION}</div>
+    ${S.storageNote ? `<div class="banner err">${esc(S.storageNote)}</div>` : ''}
+  </div>
+  <div class="glass pad mt">
+    <h3>Árfolyamok és számítás</h3>
+    <div class="two"><label class="field"><span>USD/HUF árfolyam</span><input id="s_usd" type="number" step="0.01" inputmode="decimal" value="${esc(st.usdHuf ?? '')}" placeholder="pl. aktuális MNB"></label>
+    <label class="field"><span>EUR/HUF árfolyam</span><input id="s_eur" type="number" step="0.01" inputmode="decimal" value="${esc(st.eurHuf ?? '')}" placeholder="pl. aktuális MNB"></label></div>
+    <div class="two"><label class="field"><span>Gradelési költség / lap (Ft)</span><input id="s_grade" type="number" inputmode="numeric" value="${esc(st.gradingCostHuf ?? '')}" placeholder="szállítással"></label>
+    <label class="field"><span>Elavult becslés (nap)</span><input id="s_stale" type="number" inputmode="numeric" value="${esc(st.staleDays)}"></label></div>
+    <p class="tiny muted">Az árfolyamot te adod meg; a devizás árak importáláskor ezzel váltódnak forintra, és az árfolyam a megfigyeléssel együtt tárolódik.</p>
+    <button class="btn block mt" data-act="saveSettings">Beállítások mentése</button>
+  </div>
+  <div class="glass pad mt">
+    <h3>Biztonsági mentés</h3>
+    <button class="btn block" data-act="exportJson">Teljes mentés (JSON, képekkel)</button>
+    <div class="two mt"><button class="btn sm" data-act="exportCardsCsv">Lapok CSV</button><button class="btn sm" data-act="exportObsCsv">Árak CSV</button></div>
+    <label class="btn block mt" style="position:relative">JSON visszatöltése<input type="file" accept="application/json,.json" class="filehidden" data-file="importJson"></label>
+    <p class="tiny muted">Visszatöltéskor az azonos azonosítójú elemek felülíródnak, a többi megmarad.</p>
+  </div>
+  <div class="glass pad mt"><h3>Veszélyzóna</h3><button class="btn danger block" data-act="wipe">Minden adat törlése</button></div>
+  <p class="tiny muted mt" style="text-align:center">LapTrezor · saját használatra · az értékek becslések, nem befektetési tanácsok</p>`;
+}
+
+// ===== Események =====
+function bind() {
+  const app = $('#app');
+  app.querySelectorAll('[data-act]').forEach(el => el.onclick = e => { e.preventDefault(); ACT[el.dataset.act]?.(el); });
+  app.querySelectorAll('[data-tab2]').forEach(el => el.onclick = () => tab(el.dataset.tab2));
+  app.querySelectorAll('[data-open]').forEach(el => el.onclick = () => go('card', { id: el.dataset.open }));
+  app.querySelectorAll('[data-openv]').forEach(el => el.onclick = () => go('value', { id: el.dataset.openv }));
+  app.querySelectorAll('[data-side]').forEach(el => el.onclick = () => { S.scan.side = el.dataset.side; render(); });
+  app.querySelectorAll('[data-file]').forEach(el => el.onchange = e => onFile(el.dataset.file, e.target.files[0], e.target));
+  app.querySelectorAll('[data-feat]').forEach(el => el.onclick = () => { S.draft.features[el.dataset.feat] = !S.draft.features[el.dataset.feat]; el.classList.toggle('on'); });
+  app.querySelectorAll('[data-d]').forEach(el => el.oninput = () => {
+    const k = el.dataset.d; let v = el.value;
+    if (k === 'valuationBasis') v = normGrade(v);
+    S.draft[k] = v;
+    if (k === 'player') app.querySelector('.pname').textContent = v || 'Ismeretlen játékos';
+  });
+  app.querySelectorAll('[data-d]').forEach(el => el.onchange = () => { if (['player', 'year', 'set', 'cardNumber', 'parallel', 'serialNumber'].includes(el.dataset.d)) { const y = scrollY; render(); scrollTo(0, y); } });
+  app.querySelectorAll('input[name=dup]').forEach(el => el.onchange = () => { S.draft.dupChoice = el.value; const y = scrollY; render(); scrollTo(0, y); });
+  app.querySelectorAll('[data-rmtag]').forEach(el => el.onclick = () => removeTag(+el.dataset.rmtag));
+  app.querySelectorAll('[data-rmobs]').forEach(el => el.onclick = () => removeObs(el.dataset.rmobs));
+  const q = $('#q'); if (q) q.oninput = () => { S.homeQuery = q.value; const pos = q.selectionStart; render(); const n = $('#q'); n.focus(); n.setSelectionRange(pos, pos); };
+  const so = $('#sort'); if (so) { so.value = S.homeSort; so.onchange = () => { S.homeSort = so.value; render(); }; }
+  const ss = $('#showSold'); if (ss) ss.onchange = () => { S.showSold = ss.checked; render(); };
+  if (S.view === 'card') loadPhotos();
+}
+
+async function loadPhotos() {
+  const c = cardById(S.params.id); const box = $('#photos'); if (!c || !box) return;
+  const slots = [['front', 'Előlap'], ['back', 'Hátlap']];
+  const parts = await Promise.all(slots.map(async ([side, l]) => {
+    const id = (c.images || []).find(x => x.side === side)?.id;
+    if (!id) return `<div class="p">Nincs ${l.toLowerCase()} fotó</div>`;
+    let img = imgCache.get(id);
+    if (!img) { try { img = await Store.getImage(id); if (img) imgCache.set(id, img); } catch { } }
+    return img ? `<div class="p"><img src="${img.dataUrl}" alt="${l}"></div>` : `<div class="p">${l}: nem tölthető be</div>`;
+  }));
+  if ($('#photos') === box) box.innerHTML = parts.join('');
+}
+
+async function onFile(kind, file, input) {
+  if (!file) return;
+  if (kind === 'importJson') { input.value = ''; return importJson(file); }
+  try {
+    busy('Kép feldolgozása…');
+    const url = URL.createObjectURL(file);
+    const p = await processImage(url);
+    p.src = url; p.rot = 0;
+    S.scan[S.scan.side] = p;
+    if (S.scan.side === 'front' && !S.scan.back) S.scan.side = 'front';
+  } catch (e) { toast(e.message || 'A kép nem dolgozható fel.', true); }
+  finally { busy(); input.value = ''; render(); }
+}
+
+const ACT = {
+  back, newScan() { resetScan(); go('scan'); },
+  async rotate() {
+    const cur = S.scan[S.scan.side]; if (!cur) return toast('Előbb készíts vagy válassz fotót.');
+    busy('Forgatás…'); try { const r = (cur.rot + 90) % 360; const p = await processImage(cur.src, r); p.src = cur.src; p.rot = r; S.scan[S.scan.side] = p; } finally { busy(); render(); }
+  },
+  async analyze() {
+    if (!S.scan.front) return;
+    const ctrl = new AbortController();
+    busy('Claude elemzi a lapot…', () => ctrl.abort());
+    try {
+      const images = [S.scan.front.blob, S.scan.back?.blob].filter(Boolean);
+      const res = await AI.sample(ID_PROMPT + `\nKépek: ${images.length === 2 ? '1. előlap, 2. hátlap' : '1. előlap (hátlap nincs)'}.`, { images, modelTier: 'complex', signal: ctrl.signal, cache: false });
+      const j = extractJSON(res.text);
+      const d = newDraft('ai'); applyAI(d, j);
+      S.draft = d; busy(); go('identify');
+    } catch (e) {
+      busy();
+      if (e?.name === 'AbortError') return toast('Elemzés megszakítva.');
+      if (e?.code === 'not_granted') { S.ai.available = false; render(); return toast('Az AI-hívás nincs engedélyezve. Használd a Claude chat módszert.', true); }
+      if (e?.code === 'rate_limited') return toast('Túl sok kérés – várj egy kicsit, majd próbáld újra.', true);
+      toast('Az elemzés nem sikerült: ' + (e?.message || e?.code || e) + '. Próbáld újra, vagy töltsd ki kézzel.', true);
+    }
+  },
+  chatMethod(_el, gradeCardId = null) {
+    modal(`<h3>${gradeCardId ? 'Állapotbecslés Claude chatben' : 'Claude chat módszer'}</h3>
+      <ol class="small" style="padding-left:18px;color:#d8d4cf"><li>Másold ki az alábbi utasítást.</li><li>Nyiss egy Claude chatet, csatold a lap előlapjának és hátlapjának fotóját, és illeszd be az utasítást.</li><li>A válaszként kapott JSON-t illeszd be ide.</li></ol>
+      <button class="btn block" id="cpP">${I.copy} Utasítás másolása</button>
+      <label class="field"><span>Claude JSON válasza</span><textarea id="pj" placeholder='{"player": "…", …}'></textarea></label>
+      <div class="two mt"><button class="btn" data-close>Mégse</button><button class="btn primary" id="pjOk">Feldolgozás</button></div>`, el => {
+      el.querySelector('#cpP').onclick = () => copyText(ID_PROMPT, 'Utasítás másolva');
+      el.querySelector('#pjOk').onclick = () => {
+        try {
+          const j = extractJSON(el.querySelector('#pj').value); const d = newDraft('paste'); applyAI(d, j);
+          if (gradeCardId) {
+            if (!d.condition) throw new Error('a válaszban nincs állapotbecslés');
+            const c = cardById(gradeCardId); const n = { ...c, visualGradeEstimate: d.condition, conditionNotes: d.condition.notes || c.conditionNotes, updatedAt: nowIso() };
+            Store.put('cards', n).then(() => { S.cards = S.cards.map(x => x.id === n.id ? n : x); closeModal(); render(); toast('Állapotbecslés frissítve.'); }).catch(() => { });
+            return;
+          }
+          S.draft = d; closeModal(); go('identify');
+        }
+        catch (e) { toast('Érvénytelen JSON: ' + e.message, true); }
+      };
+    });
+  },
+  manualFromScan() { S.draft = newDraft('manual'); go('identify'); },
+  manualNew() { resetScan(); S.draft = newDraft('manual'); go('identify'); },
+  discardDraft: async () => { if (await confirmBox('Elveted?', 'Az azonosítás adatai és a fotók nem kerülnek mentésre.', 'Elvetés', true)) { S.draft = null; resetScan(); tab('home'); } },
+  async saveDraft() {
+    const d = S.draft;
+    const qty = Math.max(1, parseInt(d.quantity) || 1), acq = Math.max(0, Number(d.acquisitionUnitPriceHuf) || 0);
+    if (!d.player.trim() && !d.set.trim()) return toast('Adj meg legalább játékost vagy szettet.', true);
+    busy('Mentés…');
+    try {
+      if (d.dupChoice && d.dupChoice !== 'new') {
+        const c = { ...cardById(d.dupChoice) };
+        c.acquisitionUnitPriceHuf = mergeAcquisition(Number(c.quantity) || 0, Number(c.acquisitionUnitPriceHuf) || 0, qty, acq);
+        c.quantity = (Number(c.quantity) || 0) + qty; c.updatedAt = nowIso();
+        c.notes = (c.notes ? c.notes + '\n' : '') + `${fmtDate(d.acquisitionDate)}: +${qty} db ${fmtHuf(acq)} egységáron (átlagos bekerülési ár frissítve).`;
+        await Store.put('cards', c); S.cards = S.cards.map(x => x.id === c.id ? c : x);
+        S.draft = null; resetScan(); busy(); toast('Darabszám növelve.'); S.stack = [{ view: 'home', params: {} }]; go('card', { id: c.id }, false); return;
+      }
+      const id = genId('c'), images = [];
+      for (const side of ['front', 'back']) {
+        const im = d.images[side]; if (!im) continue;
+        const img = { id: genId('img'), cardId: id, side, dataUrl: im.dataUrl, hash: im.hash, width: im.w, height: im.h, createdAt: nowIso() };
+        await Store.putImage(img); imgCache.set(img.id, img);
+        images.push({ id: img.id, side, hash: im.hash, width: im.w, height: im.h });
+      }
+      const card = {
+        id, player: d.player.trim(), year: d.year.trim(), manufacturer: d.manufacturer.trim(), set: d.set.trim(), cardNumber: d.cardNumber.trim(),
+        parallel: d.parallel.trim(), serialNumber: d.serialNumber.trim(), features: Object.keys(d.features).filter(k => d.features[k]),
+        images, thumb: d.images.front?.thumb || null, frontHash: d.images.front?.hash || null, quantity: qty, acquisitionDate: d.acquisitionDate,
+        acquisitionUnitPriceHuf: acq, valuationBasis: normGrade(d.valuationBasis), conditionNotes: d.condition?.notes || '',
+        visualGradeEstimate: d.condition || null, tags: [], notes: '', sales: [],
+        identification: { source: d.source, overallConfidence: d.overallConfidence, confidence: d.confidence, unreadable: d.unreadable },
+        createdAt: nowIso(), updatedAt: nowIso(),
+      };
+      await Store.put('cards', card); S.cards.push(card);
+      S.draft = null; resetScan(); busy(); toast('Lap mentve a gyűjteménybe.');
+      S.stack = [{ view: 'home', params: {} }, { view: 'card', params: { id } }]; go('value', { id }, false);
+    } catch (e) { busy(); }
+  },
+  openValue() { go('value', { id: S.params.id }); },
+  cardMenu() {
+    modal(`<h3>Műveletek</h3><div class="mt" style="display:grid;gap:10px"><button class="btn" data-m="editCard">${I.edit} Szerkesztés</button><button class="btn" data-m="sellCard">Eladás rögzítése</button><button class="btn" data-m="openValue">Állapot és érték</button><button class="btn danger" data-m="deleteCard">Lap törlése</button><button class="btn" data-m="x">Bezár</button></div>`,
+      el => el.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { closeModal(); ACT[b.dataset.m]?.(); }));
+  },
+  editCard() {
+    const c = cardById(S.params.id);
+    const f = (k, l, t = 'text', extra = '') => `<label class="field"><span>${l}</span><input data-e="${k}" type="${t}" value="${esc(k === 'valuationBasis' ? gradeLabel(c[k]) : c[k] ?? '')}" ${extra}></label>`;
+    modal(`<h3>Lap szerkesztése</h3>
+      ${f('player', 'Játékos')}<div class="two">${f('year', 'Évjárat')}${f('manufacturer', 'Gyártó')}</div>${f('set', 'Sorozat (szett)')}
+      <div class="two">${f('cardNumber', 'Lapszám')}${f('serialNumber', 'Sorszámozás')}</div>${f('parallel', 'Párhuzamos / változat')}
+      <div class="chips mt">${FEATURES.map(([k, l]) => `<label class="chip"><input type="checkbox" data-ef="${k}" ${(c.features || []).includes(k) ? 'checked' : ''}> ${l}</label>`).join('')}</div>
+      <div class="two">${f('quantity', 'Darabszám', 'number', 'min="0"')}${f('acquisitionUnitPriceHuf', 'Beszerzési egységár (Ft)', 'number', 'min="0"')}</div>
+      <div class="two">${f('acquisitionDate', 'Beszerzés dátuma', 'date')}${f('valuationBasis', 'Példány állapota')}</div>
+      <label class="field"><span>Állapot-megjegyzés</span><input data-e="conditionNotes" value="${esc(c.conditionNotes || '')}"></label>
+      <div class="two mt2"><button class="btn" data-close>Mégse</button><button class="btn primary" id="eOk">Mentés</button></div>`, el => {
+      el.querySelector('#eOk').onclick = async () => {
+        const n = { ...c };
+        el.querySelectorAll('[data-e]').forEach(i => { n[i.dataset.e] = i.value.trim(); });
+        n.quantity = Math.max(0, parseInt(n.quantity) || 0); n.acquisitionUnitPriceHuf = Math.max(0, Number(n.acquisitionUnitPriceHuf) || 0);
+        n.valuationBasis = normGrade(n.valuationBasis);
+        n.features = [...el.querySelectorAll('[data-ef]')].filter(i => i.checked).map(i => i.dataset.ef);
+        n.updatedAt = nowIso();
+        try { await Store.put('cards', n); S.cards = S.cards.map(x => x.id === n.id ? n : x); closeModal(); render(); toast('Mentve.'); } catch { }
+      };
+    });
+  },
+  sellCard() {
+    const c = cardById(S.params.id);
+    if (!(c.quantity > 0)) return toast('Ebből a lapból nincs több darab.');
+    modal(`<h3>Eladás rögzítése</h3><p class="muted small">A darabszám csökken; az eladás nem számít piaci veszteségnek a portfólióban.</p>
+      <div class="two"><label class="field"><span>Darab (max ${c.quantity})</span><input id="sq" type="number" min="1" max="${c.quantity}" value="1"></label><label class="field"><span>Eladási egységár (Ft)</span><input id="sp" type="number" min="0"></label></div>
+      <label class="field"><span>Dátum</span><input id="sd" type="date" value="${today()}"></label>
+      <div class="two mt2"><button class="btn" data-close>Mégse</button><button class="btn primary" id="sOk">Rögzítés</button></div>`, el => {
+      el.querySelector('#sOk').onclick = async () => {
+        const qn = parseInt(el.querySelector('#sq').value), pr = Number(el.querySelector('#sp').value);
+        if (!(qn >= 1 && qn <= c.quantity)) return toast('Érvénytelen darabszám.', true);
+        const n = { ...c, quantity: c.quantity - qn, sales: [...(c.sales || []), { date: el.querySelector('#sd').value, qty: qn, unitPriceHuf: pr || 0, costUnitHuf: c.acquisitionUnitPriceHuf }], updatedAt: nowIso() };
+        try { await Store.put('cards', n); S.cards = S.cards.map(x => x.id === n.id ? n : x); closeModal(); render(); toast('Eladás rögzítve.'); } catch { }
+      };
+    });
+  },
+  async deleteCard() {
+    const c = cardById(S.params.id);
+    if (!await confirmBox('Lap törlése', `<b>${esc(cardTitle(c))}</b> – a lap, a fotói, az ármegfigyelései és a becslései véglegesen törlődnek. Ha eladtad, inkább az „Eladás rögzítése” kell.`, 'Végleges törlés', true)) return;
+    busy('Törlés…');
+    try {
+      for (const im of c.images || []) { await Store.delImage(im.id); imgCache.delete(im.id); }
+      for (const o of S.obs.filter(o => o.cardId === c.id)) await Store.del('observations', o.id);
+      for (const v of S.vals.filter(v => v.cardId === c.id)) await Store.del('valuations', v.id);
+      await Store.del('cards', c.id);
+      S.cards = S.cards.filter(x => x.id !== c.id); S.obs = S.obs.filter(o => o.cardId !== c.id); S.vals = S.vals.filter(v => v.cardId !== c.id);
+      busy(); toast('Lap törölve.'); tab('home');
+    } catch { busy(); }
+  },
+  editNote() {
+    const c = cardById(S.params.id);
+    modal(`<h3>Megjegyzés</h3><label class="field"><textarea id="nt" style="font-family:inherit;font-size:14px;min-height:140px">${esc(c.notes || '')}</textarea></label><div class="two mt"><button class="btn" data-close>Mégse</button><button class="btn primary" id="nOk">Mentés</button></div>`, el => {
+      el.querySelector('#nOk').onclick = async () => { const n = { ...c, notes: el.querySelector('#nt').value, updatedAt: nowIso() }; try { await Store.put('cards', n); S.cards = S.cards.map(x => x.id === n.id ? n : x); closeModal(); render(); } catch { } };
+    });
+  },
+  addTag() {
+    const c = cardById(S.params.id);
+    const all = [...new Set(S.cards.flatMap(x => x.tags || []))].filter(t => !(c.tags || []).includes(t));
+    modal(`<h3>Címke hozzáadása</h3><label class="field"><input id="tg" placeholder="pl. Kedvenc, Gradelés tervben, Hosszú táv"></label>${all.length ? `<div class="chips mt">${all.map(t => `<span class="chip" data-t="${esc(t)}" style="cursor:pointer">${esc(t)}</span>`).join('')}</div>` : ''}<div class="two mt2"><button class="btn" data-close>Mégse</button><button class="btn primary" id="tOk">Hozzáadás</button></div>`, el => {
+      const add = async t => { t = t.trim(); if (!t) return; const n = { ...c, tags: [...new Set([...(c.tags || []), t])], updatedAt: nowIso() }; try { await Store.put('cards', n); S.cards = S.cards.map(x => x.id === n.id ? n : x); closeModal(); render(); } catch { } };
+      el.querySelector('#tOk').onclick = () => add(el.querySelector('#tg').value);
+      el.querySelectorAll('[data-t]').forEach(x => x.onclick = () => add(x.dataset.t));
+    });
+  },
+  async regrade() {
+    const c = cardById(S.params.id);
+    const front = (c.images || []).find(i => i.side === 'front'), backI = (c.images || []).find(i => i.side === 'back');
+    if (!(S.ai.available && S.ai.images)) return ACT.chatMethod(null, c.id);
+    if (!front) return toast('Ehhez a laphoz nincs fotó.', true);
+    const ctrl = new AbortController(); busy('Állapot becslése…', () => ctrl.abort());
+    try {
+      const blobs = [];
+      for (const im of [front, backI].filter(Boolean)) { const d = imgCache.get(im.id) || await Store.getImage(im.id); if (d) blobs.push(dataUrlToBlob(d.dataUrl)); }
+      const res = await AI.sample(ID_PROMPT + '\nEbben a körben főleg az állapotbecslés a fontos.', { images: blobs, modelTier: 'complex', signal: ctrl.signal, cache: false });
+      const j = extractJSON(res.text); const tmp = newDraft('ai'); applyAI(tmp, j);
+      if (!tmp.condition) throw new Error('A fotó alapján nem becsülhető az állapot.');
+      const n = { ...c, visualGradeEstimate: tmp.condition, conditionNotes: tmp.condition.notes || c.conditionNotes, updatedAt: nowIso() };
+      await Store.put('cards', n); S.cards = S.cards.map(x => x.id === n.id ? n : x); busy(); render(); toast('Állapotbecslés frissítve.');
+    } catch (e) { busy(); if (e?.name !== 'AbortError') toast('Nem sikerült: ' + (e?.message || e?.code || e), true); }
+  },
+  addObs() {
+    const c = cardById(S.params.id);
+    modal(`<h3>Ár rögzítése</h3><p class="tiny muted">${esc(cardTitle(c))} · ${esc(cardSub(c))}</p>
+      <div class="two"><label class="field"><span>Típus</span><select id="ot"><option value="sold">Eladott ár</option><option value="listing">Hirdetési ár</option><option value="manual">Kézi becslés</option></select></label><label class="field"><span>Eladás dátuma</span><input id="od" type="date" value="${today()}"></label></div>
+      <div class="two"><label class="field"><span>Ár</span><input id="op" type="number" step="0.01" min="0" inputmode="decimal"></label><label class="field"><span>Deviza</span><select id="oc"><option>HUF</option><option>USD</option><option>EUR</option></select></label></div>
+      <label class="field"><span>Állapot (Nyers / PSA 9 / BGS 9.5…)</span><input id="og" value="${esc(gradeLabel(c.valuationBasis))}"></label>
+      <div class="two"><label class="field"><span>Forrás neve</span><input id="os" placeholder="pl. eBay, 130point, Vatera"></label><label class="field"><span>Forrás URL</span><input id="ou" type="url" placeholder="https://…"></label></div>
+      <label class="field"><span>Megjegyzés</span><input id="on"></label>
+      <label class="check"><input type="checkbox" id="oe" checked> Pontos egyezés: azonos játékos, év, szett, lapszám, parallel és sorszámozás</label>
+      <div class="two mt2"><button class="btn" data-close>Mégse</button><button class="btn primary" id="oOk">Rögzítés</button></div>`, el => {
+      el.querySelector('#oOk').onclick = async () => {
+        const g = s => el.querySelector(s).value.trim();
+        const header = ['kartya_id', 'datum', 'ar', 'deviza', 'tipus', 'allapot', 'forras', 'url', 'pontos_egyezes', 'megjegyzes'];
+        const r = rowsToObservations([header, [c.id, g('#od'), g('#op'), g('#oc'), g('#ot'), g('#og'), g('#os'), g('#ou'), el.querySelector('#oe').checked ? 'igen' : 'nem', g('#on')]], { rates: rates() });
+        if (r.errors.length) return toast(r.errors[0].msg, true);
+        const n = await saveObs(r.valid); if (n) { closeModal(); render(); toast('Ár rögzítve. Az „Érték újraszámolása” gombbal frissítheted a becslést.'); }
+      };
+    });
+  },
+  importObs() { importDialog(S.params.id); },
+  bulkImport() { importDialog(null); },
+  pricePrompt() {
+    const c = cardById(S.params.id);
+    const p = `Keress a weben valódi, LEZÁRT (eladott) eladásokat erre a kosárlabda gyűjtői kártyára, az elmúlt 6 hónapból:
+Játékos: ${c.player || '?'}
+Év: ${c.year || '?'}
+Gyártó: ${c.manufacturer || '?'}
+Szett: ${c.set || '?'}
+Lapszám: ${c.cardNumber || '?'}
+Parallel/változat: ${c.parallel || 'base'}
+Sorszámozás: ${c.serialNumber || 'nincs'}
+Jellemzők: ${(c.features || []).join(', ') || '—'}
+
+Szabályok:
+- Csak ténylegesen talált, forrással ellenőrizhető adatot adj meg, mindegyikhez a konkrét URL-lel. Ne becsülj, ne találj ki árat.
+- Pontos egyezés = azonos játékos, év, szett, lapszám, parallel és sorszámozás. Ha bármelyik eltér, pontos_egyezes = nem.
+- Az aktív hirdetéseket tipus = listing, a lezárt eladásokat tipus = sold értékkel jelöld.
+- Az állapot oszlopba: Nyers, vagy a minősítés (pl. PSA 9, BGS 9.5).
+- Ha nem találsz adatot, ezt írd le, és ne adj CSV-t.
+
+Válasz: egy CSV kódblokk, pontosvesszővel elválasztva, pontosan ezzel a fejléccel:
+datum;ar;deviza;tipus;allapot;forras;url;pontos_egyezes;megjegyzes
+(datum: ÉÉÉÉ-HH-NN, ar: szám, deviza: USD/EUR/HUF)`;
+    copyText(p, 'Árkereső prompt másolva – illeszd be egy webkeresős Claude chatbe');
+  },
+  async recalcCard() {
+    const c = cardById(S.params.id);
+    const r = await revalue([c]);
+    toast(r ? 'Becslés frissítve.' : 'Nincs ellenőrzött új ár – a becslés nem változott.');
+    render();
+  },
+  async refreshAll() {
+    const held = S.cards.filter(c => (Number(c.quantity) || 0) > 0);
+    busy('Portfólió frissítése…');
+    try {
+      const changed = await revalue(held);
+      const now = portfolioNow(S.cards, S.vals);
+      const last = S.snaps[S.snaps.length - 1];
+      if (!snapshotDiffers(last, now)) { busy(); toast(changed ? 'A becslések frissültek, a portfólió értéke nem változott.' : 'Nincs ellenőrzött új ár.'); render(); return; }
+      const snap = { id: genId('s'), ...buildSnapshot(now, last, nowIso()) };
+      await Store.put('snapshots', snap); S.snaps.push(snap);
+      busy(); toast(`Frissítve: ${fmtHuf(snap.totalValueHuf)} (piaci ${fmtSigned(snap.marketChangeHuf)}, vétel/eladás ${fmtSigned(snap.netContributionsHuf)})`); render();
+    } catch { busy(); }
+  },
+  async saveSettings() {
+    const num = id => { const v = $(id).value.trim(); return v === '' ? null : Number(v); };
+    S.settings = { ...S.settings, usdHuf: num('#s_usd'), eurHuf: num('#s_eur'), gradingCostHuf: num('#s_grade'), staleDays: Math.max(1, num('#s_stale') || 90) };
+    await Store.saveMeta(); toast('Beállítások mentve.'); render();
+  },
+  async exportJson() {
+    busy('Mentés összeállítása…');
+    try {
+      const images = await Store.allImages();
+      const data = { app: 'LapTrezor', schemaVersion: SCHEMA_VERSION, exportedAt: nowIso(), settings: S.settings, cards: S.cards, observations: S.obs, valuations: S.vals, snapshots: S.snaps, images };
+      busy(); await saveFile(`laptrezor-mentes-${today()}.json`, JSON.stringify(data));
+    } catch (e) { busy(); toast('Export hiba: ' + (e.message || e.code), true); }
+  },
+  exportCardsCsv() { saveFile(`laptrezor-lapok-${today()}.csv`, cardsCSV(S.cards, S.vals)); },
+  exportObsCsv() { saveFile(`laptrezor-arak-${today()}.csv`, obsCSV(S.obs)); },
+  async wipe() {
+    modal(`<h3>Minden adat törlése</h3><p class="muted small">Minden lap, fotó, ár, becslés és pillanatkép véglegesen törlődik. Előtte készíts JSON mentést! A megerősítéshez írd be: <b>TÖRLÉS</b></p><label class="field"><input id="wc"></label><div class="two mt"><button class="btn" data-close>Mégse</button><button class="btn danger" id="wOk">Törlés</button></div>`, el => {
+      el.querySelector('#wOk').onclick = async () => {
+        if (el.querySelector('#wc').value.trim() !== 'TÖRLÉS') return toast('Írd be pontosan: TÖRLÉS', true);
+        closeModal(); busy('Törlés…');
+        try {
+          for (const im of await Store.allImages()) await Store.delImage(im.id);
+          for (const [col, arr] of [['observations', S.obs], ['valuations', S.vals], ['snapshots', S.snaps], ['cards', S.cards]]) for (const x of arr) await Store.del(col, x.id);
+          S.cards = []; S.obs = []; S.vals = []; S.snaps = []; imgCache.clear(); busy(); toast('Minden adat törölve.'); tab('home');
+        } catch { busy(); }
+      };
+    });
+  },
+};
+
+async function saveObs(list) {
+  const keys = new Set(S.obs.map(obsKey));
+  let n = 0, skipped = 0;
+  for (const o of list) {
+    if (keys.has(obsKey(o))) { skipped++; continue; }
+    const obs = { id: genId('o'), observedAt: nowIso(), confidence: o.exactMatch ? (o.saleType === 'sold' ? 'ellenőrzött eladás' : 'hirdetés') : 'nem pontos egyezés', ...o };
+    try { await Store.put('observations', obs); S.obs.push(obs); keys.add(obsKey(o)); n++; } catch { break; }
+  }
+  if (skipped) toast(`${skipped} már rögzített ár kihagyva (duplikátum).`);
+  return n;
+}
+async function removeObs(id) {
+  if (!await confirmBox('Ármegfigyelés törlése', 'A becslés csak a következő újraszámoláskor változik.', 'Törlés', true)) return;
+  try { await Store.del('observations', id); S.obs = S.obs.filter(o => o.id !== id); render(); } catch { }
+}
+async function removeTag(i) {
+  const c = cardById(S.params.id); const n = { ...c, tags: (c.tags || []).filter((_, j) => j !== i), updatedAt: nowIso() };
+  try { await Store.put('cards', n); S.cards = S.cards.map(x => x.id === n.id ? n : x); render(); } catch { }
+}
+async function revalue(cards) {
+  let changed = 0;
+  for (const c of cards) {
+    const prev = latestValuation(c.id, S.vals);
+    const next = computeValuation(c, S.obs, { staleDays: S.settings.staleDays });
+    if (!valuationChanged(prev, next)) continue;
+    const v = next.empty
+      ? { id: genId('v'), cardId: c.id, calculatedAt: nowIso(), estimatedUnitPriceHuf: null, lowHuf: null, highHuf: null, sourceObservationIds: [], method: next.listingsOnly ? 'Csak hirdetési ár van – nem számít bele' : 'Nincs érvényes ármegfigyelés', confidence: 'nincs', stale: true, basis: next.basis }
+      : { id: genId('v'), calculatedAt: nowIso(), ...next };
+    await Store.put('valuations', v); S.vals.push(v); changed++;
+  }
+  return changed;
+}
+
+function importDialog(cardId) {
+  const c = cardId ? cardById(cardId) : null;
+  modal(`<h3>${c ? 'Árak importálása CSV-ből' : 'Tömeges árimport'}</h3>
+    <p class="tiny muted">${c ? esc(cardTitle(c)) + ' · ' + esc(cardSub(c)) + '<br>' : ''}Fejléc (pontosvessző vagy vessző): ${c ? '' : '<b>kartya_id</b>;'}datum;ar;deviza;tipus;allapot;forras;url;pontos_egyezes;megjegyzes. A tipus: sold / listing / manual (vagy eladott / hirdetés / kézi).</p>
+    <label class="btn sm block" style="position:relative">CSV fájl választása<input type="file" accept=".csv,text/csv,text/plain" class="filehidden" id="cf"></label>
+    <label class="field"><span>…vagy illeszd be a CSV-t</span><textarea id="ct" placeholder="datum;ar;deviza;tipus;allapot;forras;url;pontos_egyezes"></textarea></label>
+    <label class="check"><input type="checkbox" id="cx"> Ahol nincs pontos_egyezes oszlop/érték: minden sor pontos egyezés (azonos játékos, év, szett, lapszám, parallel, sorszám)</label>
+    <div id="cprev"></div>
+    <div class="two mt2"><button class="btn" data-close>Mégse</button><button class="btn primary" id="cOk">Ellenőrzés</button></div>`, el => {
+    let parsed = null;
+    el.querySelector('#cf').onchange = async e => { const f = e.target.files[0]; if (f) el.querySelector('#ct').value = await f.text(); };
+    el.querySelector('#cOk').onclick = async () => {
+      if (parsed) {
+        const n = await saveObs(parsed.valid); closeModal(); render();
+        return toast(`${n} ár importálva. Frissítsd a becslést az „Érték újraszámolása” vagy „Portfólió frissítése” gombbal.`);
+      }
+      const r = rowsToObservations(parseCSV(el.querySelector('#ct').value), { cardId, rates: rates(), exactDefault: el.querySelector('#cx').checked ? true : null, knownCardIds: new Set(S.cards.map(x => x.id)) });
+      const sold = r.valid.filter(o => o.saleType === 'sold' && o.exactMatch).length;
+      el.querySelector('#cprev').innerHTML = `<div class="banner ${r.valid.length ? 'info' : 'err'}">${r.valid.length} érvényes sor (${sold} pontos egyezésű eladás – csak ezek számítanak az értékbe), ${r.errors.length} hibás.${r.errors.slice(0, 8).map(x => `<div class="tiny">${x.line}. sor: ${esc(x.msg)}</div>`).join('')}</div>`;
+      if (r.valid.length) { parsed = r; el.querySelector('#cOk').textContent = `${r.valid.length} sor importálása`; }
+    };
+  });
+}
+
+async function importJson(file) {
+  let data;
+  try { data = JSON.parse(await file.text()); } catch { return toast('A fájl nem érvényes JSON.', true); }
+  if (data.app !== 'LapTrezor' || !Array.isArray(data.cards)) return toast('Ez nem LapTrezor mentés.', true);
+  if (data.schemaVersion > SCHEMA_VERSION) return toast('A mentés újabb sémaverziójú (' + data.schemaVersion + '), mint az alkalmazás.', true);
+  const n = k => (data[k] || []).length;
+  if (!await confirmBox('Mentés visszatöltése', `${n('cards')} lap, ${n('observations')} ár, ${n('valuations')} becslés, ${n('snapshots')} pillanatkép, ${n('images')} fotó (${fmtDT(data.exportedAt)}). Az azonos azonosítójú elemek felülíródnak.`, 'Visszatöltés')) return;
+  busy('Visszatöltés…');
+  try {
+    const up = (arr, x) => { const i = arr.findIndex(y => y.id === x.id); if (i >= 0) arr[i] = x; else arr.push(x); };
+    for (const im of data.images || []) { await Store.putImage(im); imgCache.set(im.id, im); }
+    for (const [col, key, arr] of [['cards', 'cards', S.cards], ['observations', 'observations', S.obs], ['valuations', 'valuations', S.vals], ['snapshots', 'snapshots', S.snaps]])
+      for (const x of data[key] || []) { await Store.put(col, x); up(arr, x); }
+    S.snaps.sort((a, b) => a.timestamp < b.timestamp ? -1 : 1);
+    if (data.settings) { S.settings = { ...S.settings, ...data.settings }; await Store.saveMeta(); }
+    busy(); toast('Visszatöltés kész.'); tab('home');
+  } catch (e) { busy(); toast('Visszatöltés megszakadt: ' + (e.message || e.code), true); }
+}
+
+// ===== Teljes képernyő dupla koppintásra =====
+const NOFS = 'button,input,select,textarea,label,a,.tcard,.li,.badge,.chip,.seg,.frame,.sheet,nav';
+function toggleFullscreen() {
+  const d = document, el = d.documentElement;
+  if (d.fullscreenElement || d.webkitFullscreenElement) return (d.exitFullscreen || d.webkitExitFullscreen).call(d);
+  const req = el.requestFullscreen || el.webkitRequestFullscreen;
+  if (req) { const p = req.call(el, { navigationUI: 'hide' }); p && p.catch && p.catch(() => fsHint()); }
+  else fsHint();
+}
+function fsHint() {
+  toast(/iPhone|iPad/i.test(navigator.userAgent) ? 'iPhone-on: Safari → Megosztás → „Főképernyőhöz adás”, és az ikonról teljes képernyőn indul.' : 'A teljes képernyő itt nem támogatott – tedd ki az ikont a kezdőképernyőre.');
+}
+let lastTap = 0, lastTouchFs = 0;
+document.addEventListener('touchend', e => {
+  if (e.touches.length || e.target.closest(NOFS)) { lastTap = 0; return; }
+  const t = Date.now();
+  if (t - lastTap < 320) { e.preventDefault(); lastTap = 0; lastTouchFs = t; toggleFullscreen(); } else lastTap = t;
+}, { passive: false });
+document.addEventListener('dblclick', e => { if (Date.now() - lastTouchFs < 800 || e.target.closest(NOFS)) return; toggleFullscreen(); });
+if (!window.claude && 'serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { }));
+}
+
+// ===== Indítás =====
+render();
+(async () => {
+  await Store.init();
+  render();
+  AI.init();
+  try { if (!localStorage.getItem('lt_fs_tip') && !matchMedia('(display-mode: standalone)').matches && !matchMedia('(display-mode: fullscreen)').matches) { setTimeout(() => toast('Tipp: dupla koppintás egy üres részen = teljes képernyő'), 1200); localStorage.setItem('lt_fs_tip', '1'); } } catch { }
+})();
+
+</script></body></html>
