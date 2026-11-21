@@ -883,6 +883,7 @@ function vHome() {
     <div><b class="num">${avg == null ? '—' : fmtHuf(avg)}</b><span>átlagos érték</span></div>
     <div><b class="num ${p.unrealized >= 0 ? 'pos' : 'neg'}">${p.items.length ? fmtSigned(p.unrealized) : '—'}</b><span>nem realizált eredmény</span></div>
   </div>
+  ${(() => { const n = held.filter(c => staleState(c)[0] === 'o').length; return n ? `<div class="banner info mt row between" style="gap:10px"><span><b>${n} laphoz új ár érkezett</b>${S.obs.some(o => (o.notes || '').includes('Heti Claude')) ? ' (heti Claude-frissítés)' : ''}.</span><button class="btn sm primary" data-act="refreshAll">Frissítés</button></div>` : ''; })()}
   ${empty ? `<div class="glass empty mt2">${emptyArt()}<h3>Még üres a trezor</h3><p class="muted small">Fotózd le az első lapodat – Claude azonosítja, te jóváhagyod, és bekerül a gyűjteménybe.</p><button class="btn sm" data-act="manualNew">${I.edit} Kézi felvétel</button></div>` : `
   ${best.length ? `<div class="row between"><h2>Legértékesebb lapjaim</h2></div><div class="hscroll">${best.map(c => tc(c, true)).join('')}</div>` : ''}
   <div class="row between"><h2>Teljes gyűjtemény (${held.length})</h2><button class="btn sm" data-act="manualNew">${I.plus} Kézi</button></div>
