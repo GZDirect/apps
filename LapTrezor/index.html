@@ -23,7 +23,7 @@ body{min-height:100vh;background:
 button,input,select,textarea{font:inherit;color:inherit}
 .num{font-variant-numeric:tabular-nums}
 #app{max-width:480px;margin:0 auto;min-height:100vh;padding:0 16px calc(96px + env(safe-area-inset-bottom));position:relative}
-.top{display:flex;align-items:center;gap:10px;padding:18px 0 12px;position:sticky;top:0;z-index:5;background:linear-gradient(180deg,rgba(16,17,20,.96) 70%,rgba(16,17,20,0))}
+.top{display:flex;align-items:center;gap:10px;padding:14px 0 10px;position:sticky;top:0;z-index:5;background:#101114;margin:0 -16px 6px;padding-left:16px;padding-right:16px;box-shadow:0 8px 16px -8px rgba(0,0,0,.6)}
 .top h1{font-size:19px;font-weight:700;margin:0;flex:1;text-align:center}
 .top.brand h1{text-align:left;font-size:24px;font-weight:800;font-style:italic;letter-spacing:-.5px}
 .iconbtn{width:40px;height:40px;border-radius:12px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer;color:var(--text)}
@@ -72,16 +72,16 @@ nav.bottom button.on{color:var(--orange);font-weight:700}
 .seg{display:flex;background:var(--surface2);border-radius:999px;padding:4px;width:max-content;margin:0 auto}
 .seg button{border:0;background:none;padding:8px 24px;border-radius:999px;cursor:pointer;color:var(--muted);font-weight:600}
 .seg button.on{background:var(--orange);color:#1b0d02}
-.frame{position:relative;margin:18px auto 0;width:76%;aspect-ratio:2.5/3.5;border-radius:18px;background:radial-gradient(ellipse at 50% 30%,rgba(255,140,60,.10),rgba(0,0,0,.25));display:grid;place-items:center}
+.frame{position:relative;margin:16px auto 0;width:min(76%,calc((100vh - 430px) * .714));width:min(76%,calc((100dvh - 430px) * .714));min-width:150px;aspect-ratio:2.5/3.5;border-radius:18px;background:radial-gradient(ellipse at 50% 30%,rgba(255,140,60,.10),rgba(0,0,0,.25));display:grid;place-items:center}
 .frame::before,.frame::after,.frame>i::before,.frame>i::after{content:"";position:absolute;width:34px;height:34px;border:3px solid #fff;border-radius:4px}
 .frame::before{top:-8px;left:-8px;border-right:0;border-bottom:0}.frame::after{top:-8px;right:-8px;border-left:0;border-bottom:0}
 .frame>i::before{bottom:-8px;left:-8px;border-right:0;border-top:0}.frame>i::after{bottom:-8px;right:-8px;border-left:0;border-top:0}
 .frame img{width:100%;height:100%;object-fit:contain;border-radius:14px}
 .frame .ph{color:var(--muted);text-align:center;padding:20px;font-size:14px}
-.hint{display:flex;width:max-content;margin:16px auto 0;padding:9px 16px;border-radius:999px;background:rgba(20,21,25,.85);border:1px solid var(--line);font-size:13px;gap:8px;align-items:center}
-.camrow{display:flex;justify-content:space-around;align-items:center;margin-top:22px}
+.hint{display:flex;width:max-content;max-width:100%;margin:14px auto 0;padding:9px 16px;border-radius:999px;background:rgba(20,21,25,.85);border:1px solid var(--line);font-size:13px;gap:8px;align-items:center}
+.camrow{display:flex;justify-content:space-around;align-items:center;margin-top:14px}
 .shutter{width:74px;height:74px;border-radius:50%;border:4px solid #fff;background:radial-gradient(circle,var(--orange) 60%,var(--orange) 61%);box-shadow:0 0 0 4px rgba(255,122,26,.25);cursor:pointer;position:relative}
-.circ{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:var(--surface2);display:grid;place-items:center;cursor:pointer;position:relative}
+.circ{color:var(--text);width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:var(--surface2);display:grid;place-items:center;cursor:pointer;position:relative}
 .circ svg{width:22px;height:22px}
 .filehidden{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .idimg{width:62%;margin:6px auto 0;aspect-ratio:2.5/3.5;border-radius:14px;overflow:hidden;border:1px solid rgba(217,172,84,.5);box-shadow:0 0 40px rgba(255,150,60,.18);background:var(--surface2)}
@@ -904,13 +904,15 @@ function vScan() {
     : S.ai.images === false && S.ai.available ? `<div class="banner">A képek átadása az AI-nak itt nem támogatott. Használd a „Claude chat módszert” vagy a kézi kitöltést.</div>` : '';
   return `${topBar('Lap szkennelése')}
   <div class="seg"><button class="${S.scan.side === 'front' ? 'on' : ''}" data-side="front">Előlap${S.scan.front ? ' ✓' : ''}</button><button class="${S.scan.side === 'back' ? 'on' : ''}" data-side="back">Hátlap${S.scan.back ? ' ✓' : ''}</button></div>
-  <div class="frame"><i></i>${cur ? `<img src="${cur.dataUrl}" alt="">` : `<div class="ph">${I.camera.replace('<svg', '<svg style="width:40px;height:40px;opacity:.5;display:block;margin:0 auto 8px"')}${S.scan.side === 'front' ? 'Előlap fotója' : 'Hátlap fotója (ajánlott: évszám, lapszám, sorszám)'}</div>`}</div>
+  <div class="frame" data-act="shoot" style="cursor:pointer"><i></i>${cur ? `<img src="${cur.dataUrl}" alt="">` : `<div class="ph">${I.camera.replace('<svg', '<svg style="width:40px;height:40px;opacity:.5;display:block;margin:0 auto 8px"')}${S.scan.side === 'front' ? 'Koppints ide az előlap fotózásához' : 'Koppints ide a hátlap fotózásához (évszám, lapszám, sorszám)'}</div>`}</div>
   <div class="hint">${I.scan.replace('<svg', '<svg style="width:16px;height:16px"')} Igazítsd a lapot a keretbe, tükröződés nélkül</div>
   <div class="camrow">
-    <label class="circ" aria-label="Forgatás" data-act="rotate">${I.rotate}</label>
-    <label class="shutter" aria-label="Fotó készítése"><input type="file" accept="image/*" capture="environment" class="filehidden" data-file="cam"></label>
-    <label class="circ" aria-label="Galéria">${I.image}<input type="file" accept="image/*" class="filehidden" data-file="gal"></label>
+    <button class="circ" aria-label="Forgatás" data-act="rotate">${I.rotate}</button>
+    <button class="shutter" aria-label="Fotó készítése" data-act="shoot"></button>
+    <button class="circ" aria-label="Galéria" data-act="gallery">${I.image}</button>
   </div>
+  <input type="file" accept="image/*" capture="environment" id="camIn" data-file="cam" style="display:none">
+  <input type="file" accept="image/*" id="galIn" data-file="gal" style="display:none">
   ${aiNote}
   ${S.ai.available && S.ai.images ? `<button class="btn primary block mt2" data-act="analyze" ${S.scan.front ? '' : 'disabled'}>Elemzés Claude-dal →</button>
   <div class="two mt"><button class="btn sm" data-act="chatMethod">${I.copy} Claude chat módszer</button><button class="btn sm" data-act="manualFromScan">${I.edit} Kézi kitöltés</button></div>`
@@ -1187,6 +1189,8 @@ async function onFile(kind, file, input) {
 
 const ACT = {
   back, newScan() { resetScan(); go('scan'); },
+  shoot() { const i = $('#camIn'); if (!i) return; try { i.value = ''; i.click(); } catch { toast('A kamera nem nyitható meg – használd a galéria gombot.', true); } },
+  gallery() { const i = $('#galIn'); if (!i) return; i.value = ''; i.click(); },
   async rotate() {
     const cur = S.scan[S.scan.side]; if (!cur) return toast('Előbb készíts vagy válassz fotót.');
     busy('Forgatás…'); try { const r = (cur.rot + 90) % 360; const p = await processImage(cur.src, r); p.src = cur.src; p.rot = r; S.scan[S.scan.side] = p; } finally { busy(); render(); }
